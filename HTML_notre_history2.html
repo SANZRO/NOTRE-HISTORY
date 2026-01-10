@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trello — Races, Talent, Classe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <style>
+    :root{
+      --cloud-speed: 0.33;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      background: radial-gradient(circle at 50% 20%, #0b1a2f, #000015);
+    }
+
+    /* Ciel étoilé simple */
+    #bgStars {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+      background: radial-gradient(circle at 50% 20%, #ffffff11, #000015);
+    }
+    .star {
+      position: absolute; background: white; border-radius: 50%;
+      opacity: 0.8; animation: twinkle 2.2s ease-in-out infinite;
+      filter: drop-shadow(0 0 2px rgba(255,255,255,.9));
+    }
+    @keyframes twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+    #meteorOne {
+      position: absolute; width: 2px; height: 120px;
+      background: linear-gradient(to bottom, #fff, transparent);
+      top: 10vh; left: -10vw; opacity: 0.8;
+      animation: meteor 3s linear infinite;
+    }
+    @keyframes meteor {
+      0%   { transform: translate(0, 0) rotate(45deg); opacity: 0; }
+      10%  { opacity: 1; }
+      70%  { opacity: 1; }
+      100% { transform: translate(120vw, 80vh) rotate(45deg); opacity: 0; }
+    }
+
+    /* En-tête */
+    header {
+      position: relative; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 18px;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(2px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    header h1 { margin: 0; font-size: 18px; }
+    .btn {
+      padding: 8px 14px; border: none; border-radius: 6px;
+      cursor: pointer; color: #0d1b2a; background: rgba(33,150,243,0.35);
+      border: 1px solid rgba(33,150,243,0.4);
+      transition: background .2s ease, border-color .2s ease;
+    }
+    .btn:hover { background: rgba(33,150,243,0.5); border-color: rgba(33,150,243,0.6); }
+
+    /* Trello */
+    main {
+      position: relative; z-index: 10;
+      max-width: 1100px; margin: 30px auto; padding: 0 16px;
+    }
+    #trelloBoard {
+      margin-top: 10px; padding: 20px; background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+    }
+    #trelloColumns { display: flex; gap: 20px; flex-wrap: wrap; }
+    .trello-column {
+      flex: 1; min-width: 280px; background: rgba(0,0,0,0.35);
+      padding: 15px; border-radius: 10px; min-height: 260px;
+    }
+    .trello-column h2 { margin: 0 0 6px; text-align: center; }
+    .descRow {
+      display: flex; gap: 8px; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .toggleBtn {
+      padding: 8px 10px; border: none; border-radius: 6px; background: #2196f3;
+      color: #fff; cursor: pointer;
+    }
+    .hidden-content {
+      display: none;
+      width: 100%;
+      min-height: 100px;
+      border-radius: 6px;
+      padding: 8px;
+      color: #000;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(255,255,255,0.6);
+      margin-bottom: 8px;
+    }
+
+    .trello-list {
+      min-height: 200px; padding: 10px; border-radius: 8px;
+      border: 1px dashed rgba(255,255,255,0.3);
+      background: rgba(0,0,0,0.15);
+    }
+    .trello-card {
+      background: rgba(255,255,255,0.95); color: #000; padding: 8px;
+      margin-bottom: 8px; border-radius: 6px; cursor: grab; word-wrap: break-word;
+    }
+    .trello-card:active { cursor: grabbing; }
+    .actionsRow {
+      display: flex; gap: 8px; margin-top: 10px;
+    }
+    .addCardBtn {
+      flex: 1;
+      padding: 8px; border: none; border-radius: 6px; background: #4caf50; color: #fff; cursor: pointer;
+    }
+    .addCardBtn:hover { background: #43a047; }
+    .clearBtn {
+      padding: 8px; border: none; border-radius: 6px; background: #f57c00; color: #fff; cursor: pointer;
+    }
+    .clearBtn:hover { background: #ef6c00; }
+  </style>
+</head>
+<body>
+  <!-- Fond étoilé -->
+  <div id="bgStars" aria-hidden="true">
+    <div id="meteorOne"></div>
+  </div>
+
+  <header>
+    <h1>Trello — Races, Talent, Classe</h1>
+    <button class="btn" id="backBtn">⟵ Retour à l’accueil</button>
+  </header>
+
+  <main>
+    <section id="trelloBoard" aria-label="Tableau Trello des catégories">
+      <div id="trelloColumns">
+        <!-- Races -->
+        <div class="trello-column" data-column="races">
+          <h2>Races</h2>
+          <div class="descRow">
+            <button class="toggleBtn" type="button">Afficher / Masquer</button>
+          </div>
+          <textarea class="hidden-content" placeholder="Décris ici les races..."></textarea>
+          <div class="trello-list" aria-label="Liste de cartes — Races"></div>
+          <div class="actionsRow">
+            <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+            <button type="button" class="clearBtn" title="Effacer toutes les cartes de cette colonne">Effacer</button>
+          </div>
+        </div>
+
+        <!-- Talent -->
+        <div class="trello-column" data-column="talent">
+          <h2>Talent</h2>
+          <div class="descRow">
+            <button class="toggleBtn" type="button">Afficher / Masquer</button>
+          </div>
+          <textarea class="hidden-content" placeholder="Décris ici les talents..."></textarea>
+          <div class="trello-list" aria-label="Liste de cartes — Talent"></div>
+          <div class="actionsRow">
+            <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+            <button type="button" class="clearBtn" title="Effacer toutes les cartes de cette colonne">Effacer</button>
+          </div>
+        </div>
+
+        <!-- Classe -->
+        <div class="trello-column" data-column="classe">
+          <h2>Classe</h2>
+          <div class="descRow">
+            <button class="toggleBtn" type="button">Afficher / Masquer</button>
+          </div>
+          <textarea class="hidden-content" placeholder="Décris ici les classes..."></textarea>
+          <div class="trello-list" aria-label="Liste de cartes — Classe"></div>
+          <div class="actionsRow">
+            <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+            <button type="button" class="clearBtn" title="Effacer toutes les cartes de cette colonne">Effacer</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* ========= Fond étoilé ========= */
+    const bgStars = document.getElementById('bgStars');
+    function generateStars(count = 140) {
+      bgStars.querySelectorAll('.star').forEach(s => s.remove());
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() < 0.85 ? 2 : 3;
+        star.style.width  = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left   = (Math.random() * 100) + 'vw';
+        star.style.top    = (Math.random() * 100) + 'vh';
+        star.style.animationDuration = (1.6 + Math.random() * 2.4) + 's';
+        star.style.animationDelay    = (Math.random() * 2) + 's';
+        bgStars.appendChild(star);
+      }
+      const meteor = document.getElementById('meteorOne');
+      if (meteor) meteor.style.animationDelay = (Math.random() * 3) + 's';
+    }
+    document.addEventListener('DOMContentLoaded', () => generateStars(160));
+
+    /* ========= Persistance ========= */
+    const STORAGE_KEY = 'trello_categories_v1'; // namespace distinct
+    function loadState() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+      catch { return {}; }
+    }
+    function saveState(state) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      catch (e) { /* quota ou navigation privée */ }
+    }
+
+    // Modèle de state : { races: { desc: '...', cards: ['a','b'] }, talent: {...}, classe: {...} }
+    let appState = {
+      races:  { desc: '', cards: [] },
+      talent: { desc: '', cards: [] },
+      classe: { desc: '', cards: [] },
+      ...loadState()
+    };
+
+    /* ========= Trello logique ========= */
+    let draggedCard = null;
+
+    function createCard(text) {
+      const card = document.createElement('div');
+      card.className = 'trello-card';
+      card.textContent = text;
+      card.draggable = true;
+
+      // Supprimer via double-clic
+      card.title = 'Astuce : double-clic pour supprimer';
+      card.addEventListener('dblclick', () => {
+        const colEl = card.closest('.trello-column');
+        const colKey = colEl.dataset.column;
+        card.remove();
+        syncFromDOMToState(colKey);
+      });
+
+      card.addEventListener('dragstart', () => { draggedCard = card; card.style.opacity = '0.5'; });
+      card.addEventListener('dragend',   () => { draggedCard = null; card.style.opacity = '1'; });
+
+      return card;
+    }
+
+    function syncFromDOMToState(colKey) {
+      const colEl = document.querySelector(`.trello-column[data-column="${colKey}"]`);
+      const listEl = colEl.querySelector('.trello-list');
+      const cards = Array.from(listEl.querySelectorAll('.trello-card')).map(c => c.textContent);
+      const desc = colEl.querySelector('.hidden-content').value || '';
+      appState[colKey] = { desc, cards };
+      saveState(appState);
+    }
+
+    function renderState() {
+      ['races', 'talent', 'classe'].forEach(colKey => {
+        const colEl = document.querySelector(`.trello-column[data-column="${colKey}"]`);
+        const listEl = colEl.querySelector('.trello-list');
+        const area   = colEl.querySelector('.hidden-content');
+
+        // description
+        area.value = appState[colKey]?.desc || '';
+
+        // cartes
+        listEl.innerHTML = '';
+        (appState[colKey]?.cards || []).forEach(text => {
+          listEl.appendChild(createCard(text));
+        });
+      });
+    }
+
+    // Initialiser
+    renderState();
+
+    // Ajouter cartes
+    document.querySelectorAll('.addCardBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const colEl = btn.closest('.trello-column');
+        const colKey = colEl.dataset.column;
+        const text = prompt('Nom de la carte :');
+        if (!text) return;
+        colEl.querySelector('.trello-list').appendChild(createCard(text));
+        syncFromDOMToState(colKey);
+      });
+    });
+
+    // Effacer cartes
+    document.querySelectorAll('.clearBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const colEl = btn.closest('.trello-column');
+        const colKey = colEl.dataset.column;
+        const ok = confirm('Effacer toutes les cartes de cette colonne ?');
+        if (!ok) return;
+        colEl.querySelector('.trello-list').innerHTML = '';
+        syncFromDOMToState(colKey);
+      });
+    });
+
+    // Drag & Drop
+    document.querySelectorAll('.trello-list').forEach(list => {
+      list.addEventListener('dragover', e => e.preventDefault());
+      list.addEventListener('drop', () => {
+        if (draggedCard) {
+          const fromCol = draggedCard.closest('.trello-column').dataset.column;
+          list.appendChild(draggedCard);
+          const toCol = list.closest('.trello-column').dataset.column;
+          // Mettre à jour les 2 colonnes
+          syncFromDOMToState(fromCol);
+          syncFromDOMToState(toCol);
+        }
+      });
+    });
+
+    // Afficher / Masquer descriptions
+    document.querySelectorAll('.toggleBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const area = btn.closest('.trello-column').querySelector('.hidden-content');
+        const visible = area.style.display === 'block';
+        area.style.display = visible ? 'none' : 'block';
+        btn.textContent = visible ? 'Afficher' : 'Masquer';
+      });
+    });
+
+    // Sauvegarder les descriptions en temps réel
+    document.querySelectorAll('.hidden-content').forEach(area => {
+      area.addEventListener('input', () => {
+        const colKey = area.closest('.trello-column').dataset.column;
+        syncFromDOMToState(colKey);
+      });
+    });
+
+    // Bouton retour
+    document.getElementById('backBtn').addEventListener('click', () => {
+      // Change si nécessaire : index.html, accueil.html, etc.
+      window.location.href = 'HTML_notre_history.html';
+    });
+  </script>
+</body>
+</html>
+``

@@ -1,0 +1,522 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wiki + Trello</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <style>
+    /* ==========================================================
+       Styles de base (login, wiki, etc.)
+       ========================================================== */
+    :root{
+      /* Vitesse globale des nuages: 
+         1.00 = normal, 0.5 = 2× plus vite, 0.33 = 3× plus vite */
+      --cloud-speed: 0.33;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ===== Connexion intégrée au fond (sans bloc noir) ===== */
+    .login-form {
+      position: relative;
+      z-index: 20;              /* au-dessus de la scène */
+      max-width: 360px;
+      margin: 80px auto;
+      padding: 16px 18px;
+
+      /* Fond totalement transparent → on intègre au décor */
+      background: transparent;  /* ✅ plus de noir */
+      /* backdrop-filter: blur(2px); */ /* option: mini effet verre */
+
+      border-radius: 0;         /* sans cadre visible */
+      box-shadow: none;         /* pas d’ombre */
+      color: #0d1b2a;           /* texte foncé pour contraster sur ciel */
+    }
+
+    .login-form h2 {
+      margin-top: 0;
+      text-align: center;
+      color: #0d1b2a;           /* lisible sur ciel bleu */
+    }
+
+    /* Inputs semi-transparents pour la lisibilité, sans fond opaque */
+    .login-form input {
+      width: 100%;
+      padding: 10px 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+
+      /* verre très léger pour s’intégrer au fond */
+      background: rgba(255,255,255,0.35);
+      border: 1px solid rgba(13,27,42,0.2);
+      color: #0d1b2a;
+
+      /* améliore la lisibilité du texte sur fond animé */
+      outline: none;
+    }
+
+    .login-form input::placeholder { color: rgba(13,27,42,0.65); }
+
+    /* Boutons en style clair (bleu) translucide */
+    .login-form button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid rgba(33,150,243,0.4);
+      border-radius: 8px;
+      background: rgba(33,150,243,0.35);
+      color: #0d1b2a;
+      cursor: pointer;
+      transition: background .2s ease, border-color .2s ease;
+    }
+    .login-form button:hover {
+      background: rgba(33,150,243,0.5);
+      border-color: rgba(33,150,243,0.6);
+    }
+
+    /* Bouton réinitialisation en orange translucide */
+    #resetBtn {
+      margin-top: 8px;
+      background: rgba(245,124,0,0.35);
+      border-color: rgba(245,124,0,0.4);
+    }
+    #resetBtn:hover {
+      background: rgba(245,124,0,0.5);
+      border-color: rgba(245,124,0,0.6);
+    }
+
+    #wikiContent {
+      position: relative; z-index: 10; display: none;
+      max-width: 900px; margin: 40px auto; padding: 20px;
+      background: rgba(0,0,0,0.6); border-radius: 10px;
+    }
+    #welcomeMsg { margin-top: 0; }
+
+    #articleForm input, #articleForm textarea {
+      width: 100%; margin: 5px 0; padding: 8px;
+      border-radius: 4px; border: 1px solid #ccc;
+    }
+    #articleForm button {
+      margin-top: 5px; padding: 8px 16px; border: none;
+      border-radius: 4px; background: #4caf50; color: #fff; cursor: pointer;
+    }
+    .article { margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; }
+
+    /* ==========================================================
+       MODIF #Landing : Page de garde (ciel + nuages + herbe + marcheur)
+       ========================================================== */
+    #landingScene { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+
+    /* Ciel bleu en dégradé */
+    #landingScene .sky {
+      position: absolute; inset: 0;
+      background: linear-gradient(#87ceeb 0%, #bde4ff 60%, #eaf7ff 100%);
+    }
+
+    /* Nuages qui bougent de gauche à droite */
+    .cloud {
+      position: absolute; top: 10%;
+      background: #fff; border-radius: 40px; opacity: 0.95;
+      width: 220px; height: 70px;
+      box-shadow:
+        30px 10px 0 10px #fff,
+        60px -10px 0 20px #fff,
+        100px 0px 0 15px #fff;
+      animation: cloud-move linear infinite;
+    }
+    /* Durées + vite via var(--cloud-speed) */
+    .cloud.c1 { top: 18%; left: -280px; animation-duration: calc(60s * var(--cloud-speed)); }
+    .cloud.c2 { top: 32%; left: -380px; animation-duration: calc(80s * var(--cloud-speed)); width: 280px; height: 90px; }
+    .cloud.c3 { top: 48%; left: -320px; animation-duration: calc(70s * var(--cloud-speed)); width: 200px; height: 65px; }
+    .cloud.c4 { top: 64%; left: -420px; animation-duration: calc(95s * var(--cloud-speed)); width: 320px; height: 100px; }
+
+    @keyframes cloud-move {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(120vw); }
+    }
+
+    /* Herbe en bas */
+    .grass {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 90px;
+      background: linear-gradient(#2e7d32, #1b5e20);
+      border-top: 2px solid #154d16;
+      box-shadow: inset 0 10px 20px rgba(0,0,0,0.15);
+    }
+    .grass::before, .grass::after {
+      content: "";
+      position: absolute; left: 0; right: 0; bottom: 10px; height: 20px;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0 8px, rgba(0,0,0,0.06) 8px 16px);
+      opacity: .3;
+    }
+
+    /* Bonhomme simple qui marche (stickman) */
+    .walker {
+      position: absolute; bottom: 60px; left: -90px;
+      width: 90px; height: 160px;
+      animation: walk-path 14s linear infinite;
+    }
+    @keyframes walk-path {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(110vw); }
+    }
+    .man { position: relative; width: 90px; height: 160px; transform-origin: bottom center; animation: bob 0.8s ease-in-out infinite; }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    .man .head  { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; background: #ffe0b2; box-shadow: 0 0 0 3px #263238 inset; }
+    .man .torso { position: absolute; top: 28px; left: 50%; transform: translateX(-50%); width: 6px; height: 45px; background: #263238; border-radius: 3px; }
+    .man .arm   { position: absolute; top: 32px; width: 6px; height: 38px; background: #37474f; transform-origin: top center; border-radius: 3px; animation: swing 0.8s ease-in-out infinite; }
+    .man .arm.left  { left: calc(50% - 14px); }
+    .man .arm.right { left: calc(50% + 8px);  animation-delay: -0.4s; }
+    .man .leg   { position: absolute; top: 70px; width: 7px; height: 55px; background: #455a64; transform-origin: top center; border-radius: 3px; animation: swing 0.8s ease-in-out infinite; }
+    .man .leg.left  { left: calc(50% - 10px); }
+    .man .leg.right { left: calc(50% + 3px); animation-delay: -0.4s; }
+    @keyframes swing { 0% { transform: rotate(18deg); } 50% { transform: rotate(-18deg); } 100% { transform: rotate(18deg); } }
+
+    /* ==========================================================
+       Ciel étoilé (visible APRES connexion)
+       ========================================================== */
+    #bgStars {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+      display: none;
+      background: radial-gradient(circle at 50% 20%, #ffffff11, #000015);
+    }
+    .star {
+      position: absolute; background: white; border-radius: 50%;
+      opacity: 0.8; animation: twinkle 2.2s ease-in-out infinite;
+      filter: drop-shadow(0 0 2px rgba(255,255,255,.9));
+    }
+    @keyframes twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+
+    /* Étoile filante */
+    #meteorOne {
+      position: absolute; width: 2px; height: 120px;
+      background: linear-gradient(to bottom, #fff, transparent);
+      top: 10vh; left: -10vw; opacity: 0.8;
+      animation: meteor 3s linear infinite;
+    }
+    @keyframes meteor {
+      0%   { transform: translate(0, 0) rotate(45deg); opacity: 0; }
+      10%  { opacity: 1; }
+      70%  { opacity: 1; }
+      100% { transform: translate(120vw, 80vh) rotate(45deg); opacity: 0; }
+    }
+
+    /* ==========================================================
+       Mini Trello (styles)
+       ========================================================== */
+    #trelloBoard {
+      margin-top: 40px; padding: 20px; background: rgba(255,255,255,0.08);
+      border-radius: 10px; display: none; /* affiché après login */
+    }
+    #trelloColumns { display: flex; gap: 20px; flex-wrap: wrap; }
+    .trello-column {
+      flex: 1; min-width: 220px; background: rgba(0,0,0,0.35);
+      padding: 15px; border-radius: 10px; min-height: 260px;
+    }
+    .trello-column h3 { margin-top: 0; text-align: center; }
+    .trello-list {
+      min-height: 180px; padding: 10px; border-radius: 8px;
+      border: 1px dashed rgba(255,255,255,0.3);
+    }
+    .trello-card {
+      background: rgba(255,255,255,0.9); color: #000; padding: 8px;
+      margin-bottom: 8px; border-radius: 6px; cursor: grab; word-wrap: break-word;
+    }
+    .trello-card:active { cursor: grabbing; }
+    .addCardBtn {
+      margin-top: 10px; width: 100%; padding: 8px; border: none;
+      border-radius: 6px; background: #4caf50; color: #fff; cursor: pointer;
+    }
+    .addCardBtn:hover { background: #43a047; }
+
+    /* Styles pour les colonnes catégories (textarea + toggle) */
+    .hidden-content { 
+      display: none; 
+      width: 100%; 
+      min-height: 120px; 
+      margin-top: 10px; 
+      border-radius: 6px; 
+      padding: 8px; 
+      color: #000; 
+    }
+    .toggleBtn {
+      margin-top: 10px; width: 100%; padding: 8px; border: none;
+      border-radius: 6px; background: #2196f3; color: #fff; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================
+       MODIF #Landing : Scène de garde (ciel + nuages + herbe + marcheur)
+       ========================================================== -->
+  <div id="landingScene" aria-hidden="true">
+    <div class="sky"></div>
+    <!-- Nuages -->
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
+    <div class="cloud c4"></div>
+    <!-- Herbe -->
+    <div class="grass"></div>
+    <!-- Marcheur -->
+    <div class="walker">
+      <div class="man">
+        <div class="head"></div>
+        <div class="torso"></div>
+        <div class="arm left"></div>
+        <div class="arm right"></div>
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ciel étoilé (post-login) -->
+  <div id="bgStars" aria-hidden="true">
+    <div id="meteorOne"></div>
+  </div>
+
+  <!-- Formulaire de connexion -->
+  <div class="login-form">
+    <h2>Connexion</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+      <input type="password" id="password" placeholder="Mot de passe" required>
+      <button type="submit">Se connecter</button>
+      <button type="button" id="resetBtn">Réinitialiser / Créer un utilisateur</button>
+    </form>
+  </div>
+
+  <!-- Contenu du wiki (affiché après connexion) -->
+  <div id="wikiContent">
+    <h2 id="welcomeMsg">Bienvenue dans le wiki de notre history</h2>
+
+    <h3>Ajouter un article</h3>
+    <form id="articleForm">
+      <input type="text" id="title" placeholder="Titre de l'article" required>
+      <textarea id="body" rows="4" placeholder="Contenu de l'article" required></textarea>
+      <button type="submit">Publier</button>
+    </form>
+
+    <div id="articles"></div>
+
+    <!-- Mini Trello -->
+    <div id="trelloBoard">
+      <h2>Tableau Trello</h2>
+      <div id="trelloColumns">
+        <!-- Kanban classique -->
+        <div class="trello-column" data-column="todo">
+          <h3>À faire</h3>
+          <div class="trello-list"></div>
+          <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+        </div>
+        <div class="trello-column" data-column="doing">
+          <h3>En cours</h3>
+          <div class="trello-list"></div>
+          <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+        </div>
+        <div class="trello-column" data-column="done">
+          <h3>Terminé</h3>
+          <div class="trello-list"></div>
+          <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+        </div>
+
+      <!-- Bouton pour nouvelle page -->
+      <div style="margin-top:20px; text-align:center;">
+        <button id="newPageBtn" style="padding:10px 20px; background:#2196f3; color:#fff; border:none; border-radius:6px; cursor:pointer;">
+          Aller à la nouvelle page
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================
+       Comptes utilisateurs avec persistance (localStorage)
+       ========================================================== */
+    const STORAGE_KEY_USERS = 'demo_wiki_users_v2';
+    const DEFAULT_USERS = { admin: 'password', sanz: 'Sanzro', TEST: 'TEST' };
+
+    function loadUsers() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_USERS);
+        if (raw) return { ...DEFAULT_USERS, ...JSON.parse(raw) };
+      } catch (e) { console.warn('Lecture localStorage:', e); }
+      return { ...DEFAULT_USERS };
+    }
+    function saveUsers(obj) {
+      try { localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(obj)); }
+      catch (e) { console.warn('Écriture localStorage:', e); }
+    }
+    let users = loadUsers();
+
+    /* ==========================================================
+       Scènes (garde / étoilée)
+       ========================================================== */
+    const landingScene = document.getElementById('landingScene');
+    const bgStars      = document.getElementById('bgStars');
+
+    function showLanding() { landingScene.style.display = 'block'; bgStars.style.display = 'none'; }
+    function showStars()   { landingScene.style.display = 'none';  bgStars.style.display = 'block'; }
+
+    // Génère N étoiles à des positions aléatoires avec animation "twinkle"
+    function generateStars(count = 120) {
+      bgStars.querySelectorAll('.star').forEach(s => s.remove());
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() < 0.85 ? 2 : 3;
+        star.style.width  = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left   = (Math.random() * 100) + 'vw';
+        star.style.top    = (Math.random() * 100) + 'vh';
+        star.style.animationDuration = (1.6 + Math.random() * 2.4) + 's';
+        star.style.animationDelay    = (Math.random() * 2) + 's';
+        bgStars.appendChild(star);
+      }
+      const meteor = document.getElementById('meteorOne');
+      if (meteor) meteor.style.animationDelay = (Math.random() * 3) + 's';
+    }
+
+    // Affiche la page de garde au chargement
+    document.addEventListener('DOMContentLoaded', showLanding);
+
+    /* ==========================================================
+       Connexion
+       ========================================================== */
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const username = (document.getElementById('username').value || '').trim();
+      const password = document.getElementById('password').value;
+
+      if (!username) { alert('Veuillez entrer un nom d\'utilisateur.'); return; }
+
+      const expected = users[username];
+      if (expected && password === expected) {
+        document.querySelector('.login-form').style.display = 'none';
+        document.getElementById('wikiContent').style.display = 'block';
+
+        // Message de bienvenue
+        document.getElementById('welcomeMsg').textContent =
+          `Bienvenue dans le wiki de notre history, ${username} !`;
+
+        // Passe au ciel étoilé
+        showStars();
+        generateStars(140);
+
+        // Affiche le Trello
+        document.getElementById('trelloBoard').style.display = 'block';
+
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+      } else {
+        alert('Nom d\'utilisateur ou mot de passe incorrect.');
+      }
+    });
+
+    /* ==========================================================
+       Réinitialisation protégée (code admin 1971)
+       ========================================================== */
+    document.getElementById('resetBtn').addEventListener('click', function() {
+      const adminCode = prompt("Entrez le code administrateur :");
+      if (adminCode !== "1971") { alert("Code incorrect. Accès refusé."); return; }
+
+      const uname = (prompt('Entrez le nom d\'utilisateur à réinitialiser :') || '').trim();
+      if (!uname) { alert('Réinitialisation annulée.'); return; }
+
+      if (!users.hasOwnProperty(uname)) {
+        const create = confirm(`L'utilisateur "${uname}" n'existe pas. Voulez-vous le créer ?`);
+        if (!create) return;
+      }
+
+      const newPwd = prompt(`Entrez le nouveau mot de passe pour "${uname}" :`);
+      if (!newPwd) { alert('Réinitialisation annulée.'); return; }
+
+      users[uname] = newPwd;
+      saveUsers(users);
+      alert(`Mot de passe mis à jour pour "${uname}".`);
+    });
+
+    /* ==========================================================
+       Articles
+       ========================================================== */
+    document.getElementById('articleForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const title = (document.getElementById('title').value || '').trim();
+      const body  = (document.getElementById('body').value  || '').trim();
+
+      if (!title || !body) { alert('Veuillez renseigner le titre et le contenu.'); return; }
+
+      const articleDiv = document.createElement('div');
+      articleDiv.className = 'article';
+
+      const h3 = document.createElement('h3'); h3.textContent = title;
+      const p  = document.createElement('p');  p.textContent  = body;
+
+      articleDiv.appendChild(h3);
+      articleDiv.appendChild(p);
+      document.getElementById('articles').appendChild(articleDiv);
+
+      document.getElementById('title').value = '';
+      document.getElementById('body').value  = '';
+    });
+
+    /* ==========================================================
+       Mini Trello (cartes + drag&drop + catégories)
+       ========================================================== */
+    let draggedCard = null;
+
+    function createCard(text) {
+      const card = document.createElement('div');
+      card.className = 'trello-card';
+      card.textContent = text;
+      card.draggable = true;
+
+      card.addEventListener('dragstart', () => { draggedCard = card; card.style.opacity = '0.5'; });
+      card.addEventListener('dragend',   () => { draggedCard = null; card.style.opacity = '1'; });
+
+      return card;
+    }
+
+    document.querySelectorAll('.addCardBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = prompt('Nom de la carte :');
+        if (!text) return;
+        const list = btn.parentElement.querySelector('.trello-list');
+        list.appendChild(createCard(text));
+      });
+    });
+
+    document.querySelectorAll('.trello-list').forEach(list => {
+      list.addEventListener('dragover', e => e.preventDefault());
+      list.addEventListener('drop', () => { if (draggedCard) list.appendChild(draggedCard); });
+    });
+
+    // Boutons Afficher/Masquer pour les colonnes catégories
+    document.querySelectorAll('.toggleBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const area = btn.parentElement.querySelector('.hidden-content');
+        if (!area) return;
+        const visible = area.style.display === 'block';
+        area.style.display = visible ? 'none' : 'block';
+        btn.textContent = visible ? 'Afficher' : 'Masquer';
+      });
+    });
+
+    // Bouton "Aller à la nouvelle page"
+    document.getElementById('newPageBtn').addEventListener('click', () => {
+      // Change l’URL selon ta cible
+      window.location.href = 'HTML_notre_history2.html';
+    });
+  </script>
+</body>
+</html>
