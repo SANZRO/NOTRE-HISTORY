@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trello — Races, Talent, Classe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+ <link rel="stylesheet" href="./style/notre_histoire.css">
+
+ 
+ 
+</head>
+<body>
+  <!-- Fond étoilé -->
+  <div id="bgStars" aria-hidden="true">
+    <div id="meteorOne"></div>
+  </div>
+
+  <header>
+    <h1>Trello — Races, Talent, Classe</h1>
+    <button class="btn" id="backBtn">⟵ Retour à l’accueil</button>
+  </header>
+
+  <main>
+    <section id="trelloBoard" aria-label="Tableau Trello des catégories">
+      <div id="trelloColumns">
+
+        <!-- ===== Races ===== -->
+        <div class="trello-column" data-column="races">
+          <h2>Races</h2>
+          <div class="descRow">
+            <button class="toggleBtn" type="button">Afficher / Masquer</button>
+          </div>
+          <textarea class="hidden-content" placeholder="Décris ici les races..."></textarea>
+
+          <!-- Liste des cartes -->
+          <div class="trello-list" aria-label="Liste de cartes — Races"></div>
+
+          <!-- Actions : on garde uniquement l’ajout (suppression retirée) -->
+          <div class="actionsRow">
+            <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+          </div>
+        </div>
+
+        <!-- ===== Talent ===== -->
+        <div class="trello-column" data-column="talent">
+          <h2>Talent</h2>
+          <div class="descRow">
+            <button class="toggleBtn" type="button">Afficher / Masquer</button>
+          </div>
+          <textarea class="hidden-content" placeholder="Décris ici les talents..."></textarea>
+          <div class="trello-list" aria-label="Liste de cartes — Talent"></div>
+          <div class="actionsRow">
+            <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+          </div>
+        </div>
+
+        <!-- ===== Classe ===== -->
+        <div class="trello-column" data-column="classe">
+          <h2>Classe</h2>
+          <div class="descRow">
+            <button class="toggleBtn" type="button">Afficher / Masquer</button>
+          </div>
+          <textarea class="hidden-content" placeholder="Décris ici les classes..."></textarea>
+          <div class="trello-list" aria-label="Liste de cartes — Classe"></div>
+          <div class="actionsRow">
+            <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Modal générique d’info (utilisé pour Beastman et futures fiches) ===== -->
+  <div id="infoModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div id="infoModalPanel">
+      <div class="modalHeader">
+        <h3 id="modalTitle">Fiche</h3>
+        <button type="button" class="closeModalBtn" id="closeModalBtn">Fermer</button>
+      </div>
+      <div class="modalBody" id="modalBody">
+        <!-- Contenu injecté dynamiquement via JS -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
