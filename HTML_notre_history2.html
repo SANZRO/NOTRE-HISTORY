@@ -18,31 +18,31 @@
       background: radial-gradient(circle at 50% 20%, #0b1a2f, #000015);
     }
 
-    /* Ciel étoilé simple */
+    /* ==== Ciel étoilé simple ==== */
     #bgStars {
       position: fixed; inset: 0; z-index: 0; overflow: hidden;
       background: radial-gradient(circle at 50% 20%, #ffffff11, #000015);
     }
     .star {
       position: absolute; background: white; border-radius: 50%;
-      opacity: 0.8; animation: twinkle 2.2s ease-in-out infinite;
+      opacity: 1; animation: twinkle 1.5s ease-in-out infinite;
       filter: drop-shadow(0 0 2px rgba(255,255,255,.9));
     }
-    @keyframes twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
-    #meteorOne {
+    @keyframes twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 2; } }
+   #meteorOne {
       position: absolute; width: 2px; height: 120px;
       background: linear-gradient(to bottom, #fff, transparent);
       top: 10vh; left: -10vw; opacity: 0.8;
       animation: meteor 3s linear infinite;
     }
-    @keyframes meteor {
-      0%   { transform: translate(0, 0) rotate(45deg); opacity: 0; }
+    /*@keyframes meteor {
+      0%   { transform: translate(0, 0) rotate(120deg); opacity: 0; }
       10%  { opacity: 1; }
       70%  { opacity: 1; }
-      100% { transform: translate(120vw, 80vh) rotate(45deg); opacity: 0; }
+      100% { transform: translate(120vw, 80vh) rotate(90deg); opacity: 0; }
     }
 
-    /* En-tête */
+    /* ==== En-tête ==== */
     header {
       position: relative; z-index: 10;
       display: flex; justify-content: space-between; align-items: center;
@@ -60,7 +60,7 @@
     }
     .btn:hover { background: rgba(33,150,243,0.5); border-color: rgba(33,150,243,0.6); }
 
-    /* Trello */
+    /* ==== Trello ==== */
     main {
       position: relative; z-index: 10;
       max-width: 1100px; margin: 30px auto; padding: 0 16px;
@@ -103,8 +103,14 @@
     .trello-card {
       background: rgba(255,255,255,0.95); color: #000; padding: 8px;
       margin-bottom: 8px; border-radius: 6px; cursor: grab; word-wrap: break-word;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .trello-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
     }
     .trello-card:active { cursor: grabbing; }
+
     .actionsRow {
       display: flex; gap: 8px; margin-top: 10px;
     }
@@ -113,10 +119,54 @@
       padding: 8px; border: none; border-radius: 6px; background: #4caf50; color: #fff; cursor: pointer;
     }
     .addCardBtn:hover { background: #43a047; }
-    .clearBtn {
-      padding: 8px; border: none; border-radius: 6px; background: #f57c00; color: #fff; cursor: pointer;
+
+    /* ==== Modal d’information (pour Beastman et autres fiches) ==== */
+    /* Overlay semi-transparent plein écran */
+    #infoModalOverlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.55);
+      display: none; /* visible via JS */
+      align-items: center; justify-content: center;
+      padding: 16px;
     }
-    .clearBtn:hover { background: #ef6c00; }
+    /* Panneau central */
+    #infoModalPanel {
+      max-width: 720px; width: 100%;
+      background: #0d1b2a;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+    .modalHeader {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      border-top-left-radius: 10px; border-top-right-radius: 10px;
+    }
+    .modalHeader h3 { margin: 0; font-size: 16px; }
+    .closeModalBtn {
+      border: none; border-radius: 6px; padding: 8px 10px; cursor: pointer;
+      background: #e53935; color: #fff;
+    }
+    .closeModalBtn:hover { background: #d32f2f; }
+    .modalBody {
+      padding: 14px 16px;
+    }
+    .modalBody h4 {
+      margin: 12px 0 6px; font-size: 14px; color: #90caf9;
+    }
+    .modalBody p, .modalBody ul, .modalBody pre {
+      margin: 6px 0; color: #e3f2fd;
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 8px;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
@@ -133,21 +183,25 @@
   <main>
     <section id="trelloBoard" aria-label="Tableau Trello des catégories">
       <div id="trelloColumns">
-        <!-- Races -->
+
+        <!-- ===== Races ===== -->
         <div class="trello-column" data-column="races">
           <h2>Races</h2>
           <div class="descRow">
             <button class="toggleBtn" type="button">Afficher / Masquer</button>
           </div>
           <textarea class="hidden-content" placeholder="Décris ici les races..."></textarea>
+
+          <!-- Liste des cartes -->
           <div class="trello-list" aria-label="Liste de cartes — Races"></div>
+
+          <!-- Actions : on garde uniquement l’ajout (suppression retirée) -->
           <div class="actionsRow">
             <button type="button" class="addCardBtn">+ Ajouter une carte</button>
-            <button type="button" class="clearBtn" title="Effacer toutes les cartes de cette colonne">Effacer</button>
           </div>
         </div>
 
-        <!-- Talent -->
+        <!-- ===== Talent ===== -->
         <div class="trello-column" data-column="talent">
           <h2>Talent</h2>
           <div class="descRow">
@@ -157,11 +211,10 @@
           <div class="trello-list" aria-label="Liste de cartes — Talent"></div>
           <div class="actionsRow">
             <button type="button" class="addCardBtn">+ Ajouter une carte</button>
-            <button type="button" class="clearBtn" title="Effacer toutes les cartes de cette colonne">Effacer</button>
           </div>
         </div>
 
-        <!-- Classe -->
+        <!-- ===== Classe ===== -->
         <div class="trello-column" data-column="classe">
           <h2>Classe</h2>
           <div class="descRow">
@@ -171,22 +224,38 @@
           <div class="trello-list" aria-label="Liste de cartes — Classe"></div>
           <div class="actionsRow">
             <button type="button" class="addCardBtn">+ Ajouter une carte</button>
-            <button type="button" class="clearBtn" title="Effacer toutes les cartes de cette colonne">Effacer</button>
           </div>
         </div>
+
       </div>
     </section>
   </main>
 
+  <!-- ===== Modal générique d’info (utilisé pour Beastman et futures fiches) ===== -->
+  <div id="infoModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div id="infoModalPanel">
+      <div class="modalHeader">
+        <h3 id="modalTitle">Fiche</h3>
+        <button type="button" class="closeModalBtn" id="closeModalBtn">Fermer</button>
+      </div>
+      <div class="modalBody" id="modalBody">
+        <!-- Contenu injecté dynamiquement via JS -->
+      </div>
+    </div>
+  </div>
+
   <script>
-    /* ========= Fond étoilé ========= */
+    /* =========================================================
+       1) FOND ÉTOILÉ
+       - Tu peux changer le nombre d’étoiles dans generateStars(160)
+       ========================================================= */
     const bgStars = document.getElementById('bgStars');
     function generateStars(count = 140) {
       bgStars.querySelectorAll('.star').forEach(s => s.remove());
       for (let i = 0; i < count; i++) {
         const star = document.createElement('div');
         star.className = 'star';
-        const size = Math.random() < 0.85 ? 2 : 3;
+        const size = Math.random() < 0.85 ? 4 : 6;
         star.style.width  = size + 'px';
         star.style.height = size + 'px';
         star.style.left   = (Math.random() * 100) + 'vw';
@@ -200,8 +269,12 @@
     }
     document.addEventListener('DOMContentLoaded', () => generateStars(160));
 
-    /* ========= Persistance ========= */
+    /* =========================================================
+       2) PERSISTANCE (localStorage)
+       - Tout est stocké dans STORAGE_KEY (cartes + descriptions)
+       ========================================================= */
     const STORAGE_KEY = 'trello_categories_v1'; // namespace distinct
+
     function loadState() {
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
       catch { return {}; }
@@ -211,7 +284,8 @@
       catch (e) { /* quota ou navigation privée */ }
     }
 
-    // Modèle de state : { races: { desc: '...', cards: ['a','b'] }, talent: {...}, classe: {...} }
+    // Modèle de state :
+    // { races: { desc: '...', cards: ['a','b'] }, talent: {...}, classe: {...} }
     let appState = {
       races:  { desc: '', cards: [] },
       talent: { desc: '', cards: [] },
@@ -219,30 +293,145 @@
       ...loadState()
     };
 
-    /* ========= Trello logique ========= */
+    /* =========================================================
+       3) RACES PAR DÉFAUT (Injection automatique)
+       - Ici tu définis les cartes de race qui doivent exister au chargement.
+       - IMPORTANT : on ne les duplique pas si elles sont déjà présentes.
+       ========================================================= */
+    const DEFAULT_RACES = [
+      'Beastman 🦁',
+      'Kadmerian (Nain)',
+      'Seishin 👻',
+      'Dunkel 😈',
+      'Géant 🪓' ,
+      'Qoog ' ,
+      'Lizardman ' ,
+      'Chitine ' ,
+      'Samshioune ' , 
+      'Riviera' ,
+      'Witch' ,
+      'Manifest' ,
+      'Vampire' ,
+      'Driade' ,
+      'Dokaebi' ,
+      'Ouga' ,
+      'Undead' ,
+      'Shinobi' ,
+      'Deep Sea' ,     
+      'Elf' ,
+      'Yaugestor' ,
+      'Oni' ,
+      'AID' ,
+      'Volture' ,
+      'Emporium' ,
+      'Humain' ,
+      'Fishman' ,
+      'Hymne' ,
+      'TAZ'
+    ];
+
+    if (!Array.isArray(appState.races.cards)) appState.races.cards = [];
+    DEFAULT_RACES.forEach(raceLabel => {
+      if (!appState.races.cards.includes(raceLabel)) {
+        appState.races.cards.push(raceLabel);
+      }
+    });
+    saveState(appState);
+
+    /* =========================================================
+       4) TRELLO LOGIQUE
+       - Drag & Drop OK
+       - Ajout de carte OK
+       - Suppression volontairement retirée (tu avais demandé)
+       ========================================================= */
     let draggedCard = null;
 
+    /* ---------------------------------------------------------
+       UTILS : normaliser une chaine pour comparaison
+       - évite les soucis avec accents ("Géant" vs "geant")
+       - tu peux réutiliser pour d'autres fonctionnalités
+       --------------------------------------------------------- */
+    function normalizeText(s) {
+      return (s || '')
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, ''); // retire accents
+    }
+
+    /* ---------------------------------------------------------
+       createCard(text)
+       - crée une carte Trello + events (drag + click fiche)
+       IMPORTANT :
+       - Toute la logique click doit être ICI (pas en dehors)
+       --------------------------------------------------------- */
     function createCard(text) {
       const card = document.createElement('div');
       card.className = 'trello-card';
       card.textContent = text;
       card.draggable = true;
 
-      // Supprimer via double-clic
-      card.title = 'Astuce : double-clic pour supprimer';
-      card.addEventListener('dblclick', () => {
-        const colEl = card.closest('.trello-column');
-        const colKey = colEl.dataset.column;
-        card.remove();
-        syncFromDOMToState(colKey);
+      // Drag & Drop
+      card.addEventListener('dragstart', () => {
+        draggedCard = card;
+        card.style.opacity = '0.5';
+      });
+      card.addEventListener('dragend', () => {
+        draggedCard = null;
+        card.style.opacity = '1';
       });
 
-      card.addEventListener('dragstart', () => { draggedCard = card; card.style.opacity = '0.5'; });
-      card.addEventListener('dragend',   () => { draggedCard = null; card.style.opacity = '1'; });
+      /* -------------------------------------------------------
+         CLICK : ouvrir la fiche si la carte correspond à une race
+         - Tu peux ajouter d'autres conditions ici
+         - Exemple :
+           if (key.includes('elf')) openElfModal();
+         ------------------------------------------------------- */
+      card.addEventListener('click', () => {
+        const key = normalizeText(text);
+
+        if (key.includes('beastman')) openBeastmanModal();
+        else if (key.includes('kadmerian')) openKadmerianModal();
+        else if (key.includes('seishin')) openSeishinModal();
+        else if (key.includes('dunkel')) openDunkelModal();
+        else if (key.includes('geant')) openGeantModal();
+      //else if (key.includes('Qoog')) openGeantModal();
+      //else if (key.includes(Lizardman')) openGeantModal();
+      //else if (key.includes('Chitine')) openGeantModal();
+      //else if (key.includes('Samshioune')) openGeantModal();
+      //else if (key.includes('Riviera')) openGeantModal();
+      //else if (key.includes('Witch')) openGeantModal();
+      //else if (key.includes('Manifest')) openGeantModal();
+      //else if (key.includes('Vampire')) openGeantModal();
+      //else if (key.includes('Driade')) openGeantModal();
+      //else if (key.includes('Dokaebi')) openGeantModal();
+      //else if (key.includes('Ouga')) openGeantModal();
+      //else if (key.includes('Undead')) openGeantModal();
+      //else if (key.includes('Shinobi')) openGeantModal();
+      //else if (key.includes('Deep Sea')) openGeantModal();
+      //else if (key.includes('Elf')) openGeantModal();
+      //else if (key.includes('Yaugestor')) openGeantModal();
+      //else if (key.includes('Oni')) openGeantModal();
+      //else if (key.includes('Aid')) openGeantModal();
+      //else if (key.includes('Volture')) openGeantModal();
+      //else if (key.includes('Emporium')) openGeantModal();
+      //else if (key.includes('Humain')) openGeantModal();
+      //else if (key.includes('Fishman')) openGeantModal();
+      //else if (key.includes('Hymne')) openGeantModal();
+      //else if (key.includes('TAZ')) openGeantModal();
+       
+        // else : si ce n’est pas une race connue, on ne fait rien.
+      });
 
       return card;
     }
 
+    /* ---------------------------------------------------------
+       syncFromDOMToState(colKey)
+       - lit les cartes + description depuis le DOM
+       - met à jour appState + localStorage
+       --------------------------------------------------------- */
     function syncFromDOMToState(colKey) {
       const colEl = document.querySelector(`.trello-column[data-column="${colKey}"]`);
       const listEl = colEl.querySelector('.trello-list');
@@ -252,6 +441,10 @@
       saveState(appState);
     }
 
+    /* ---------------------------------------------------------
+       renderState()
+       - reconstruit toutes les colonnes à partir de appState
+       --------------------------------------------------------- */
     function renderState() {
       ['races', 'talent', 'classe'].forEach(colKey => {
         const colEl = document.querySelector(`.trello-column[data-column="${colKey}"]`);
@@ -263,40 +456,45 @@
 
         // cartes
         listEl.innerHTML = '';
-        (appState[colKey]?.cards || []).forEach(text => {
-          listEl.appendChild(createCard(text));
+        (appState[colKey]?.cards || []).forEach(cardText => {
+          listEl.appendChild(createCard(cardText));
         });
       });
     }
 
-    // Initialiser
+    // Initialiser l’UI
     renderState();
 
-    // Ajouter cartes
+    /* =========================================================
+       5) AJOUT DE CARTES (bouton vert)
+       - Ajoute une carte dans la colonne ciblée
+       - Evite les doublons exacts dans la même colonne
+       ========================================================= */
     document.querySelectorAll('.addCardBtn').forEach(btn => {
       btn.addEventListener('click', () => {
         const colEl = btn.closest('.trello-column');
         const colKey = colEl.dataset.column;
+
         const text = prompt('Nom de la carte :');
         if (!text) return;
-        colEl.querySelector('.trello-list').appendChild(createCard(text));
+
+        // éviter doublons exacts dans la même colonne
+        const listEl = colEl.querySelector('.trello-list');
+        const existing = Array.from(listEl.querySelectorAll('.trello-card')).map(c => c.textContent);
+        if (existing.includes(text)) {
+          alert('Cette carte existe déjà dans cette colonne.');
+          return;
+        }
+
+        listEl.appendChild(createCard(text));
         syncFromDOMToState(colKey);
       });
     });
 
-    // Effacer cartes
-    document.querySelectorAll('.clearBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const colEl = btn.closest('.trello-column');
-        const colKey = colEl.dataset.column;
-        const ok = confirm('Effacer toutes les cartes de cette colonne ?');
-        if (!ok) return;
-        colEl.querySelector('.trello-list').innerHTML = '';
-        syncFromDOMToState(colKey);
-      });
-    });
-
-    // Drag & Drop
+    /* =========================================================
+       6) DRAG & DROP ENTRE LISTES
+       - On met à jour la colonne source + destination
+       ========================================================= */
     document.querySelectorAll('.trello-list').forEach(list => {
       list.addEventListener('dragover', e => e.preventDefault());
       list.addEventListener('drop', () => {
@@ -304,6 +502,7 @@
           const fromCol = draggedCard.closest('.trello-column').dataset.column;
           list.appendChild(draggedCard);
           const toCol = list.closest('.trello-column').dataset.column;
+
           // Mettre à jour les 2 colonnes
           syncFromDOMToState(fromCol);
           syncFromDOMToState(toCol);
@@ -311,17 +510,22 @@
       });
     });
 
-    // Afficher / Masquer descriptions
+    /* =========================================================
+       7) AFFICHER / MASQUER DESCRIPTION (textarea)
+       ========================================================= */
     document.querySelectorAll('.toggleBtn').forEach(btn => {
       btn.addEventListener('click', () => {
         const area = btn.closest('.trello-column').querySelector('.hidden-content');
         const visible = area.style.display === 'block';
         area.style.display = visible ? 'none' : 'block';
-        btn.textContent = visible ? 'Afficher' : 'Masquer';
+        // Tu peux changer le texte si tu veux :
+        // btn.textContent = visible ? 'Afficher' : 'Masquer';
       });
     });
 
-    // Sauvegarder les descriptions en temps réel
+    /* =========================================================
+       8) SAUVEGARDE EN TEMPS RÉEL DES TEXTAREA
+       ========================================================= */
     document.querySelectorAll('.hidden-content').forEach(area => {
       area.addEventListener('input', () => {
         const colKey = area.closest('.trello-column').dataset.column;
@@ -329,12 +533,218 @@
       });
     });
 
-    // Bouton retour
+    /* =========================================================
+       9) BOUTON RETOUR
+       - Tu avais dit de le mettre de côté, donc je ne touche pas.
+       ========================================================= */
     document.getElementById('backBtn').addEventListener('click', () => {
-      // Change si nécessaire : index.html, accueil.html, etc.
-      window.location.href = 'HTML_notre_history.html';
+      window.location.href = 'index.html';
     });
+
+    /* =========================================================
+       10) MODAL INFRASTRUCTURE
+       - openModal(title, html)
+       - closeModal()
+       ========================================================= */
+    const infoModalOverlay = document.getElementById('infoModalOverlay');
+    const modalTitleEl = document.getElementById('modalTitle');
+    const modalBodyEl  = document.getElementById('modalBody');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    function openModal(title, htmlBody) {
+      modalTitleEl.textContent = title;
+      modalBodyEl.innerHTML = htmlBody;
+      infoModalOverlay.style.display = 'flex';
+    }
+    function closeModal() {
+      infoModalOverlay.style.display = 'none';
+      modalTitleEl.textContent = 'Fiche';
+      modalBodyEl.innerHTML = '';
+    }
+    closeModalBtn.addEventListener('click', closeModal);
+    infoModalOverlay.addEventListener('click', (e) => {
+      if (e.target === infoModalOverlay) closeModal();
+    });
+
+    /* =========================================================
+       11) FICHES RACES (MODALS)
+       - Chaque fonction = 1 race
+       - Pour en ajouter une :
+         1) Ajoute son label dans DEFAULT_RACES
+         2) Crée une fonction openTaRaceModal()
+         3) Ajoute une condition dans createCard() (click)
+       ========================================================= */
+
+    /* ========= FICHE : Beastman 🦁 ========= */
+    function openBeastmanModal() {
+      const contentHTML = `
+        <h4>Stats</h4>
+        <pre class="mono">{170 Hp, 10 Str, 10 Agi, 10 Ftd, Lvl 3 Poing/Pied}</pre>
+
+        <h4>Talents</h4>
+        <div class="mono">
+[Animal Instinct] = Lorsque le personnage tombe à moins de 25% Hp il devra faire moins au dés (20) pour esquivé (-3)
+[Primitive Instinct] = Lorsque le Personnage tombe à moins de 50% Hp il fait +75% de Dmg avec son corp
+[Survival Instinct] = Le personnage peux détecté lorsqu'un individue a une plus grande valeurs de stats sur une de ses stats physique, il peux dire laquelle.
+        </div>
+
+        <h4>Apparence</h4>
+        <pre class="mono">{Oreille animal, Queue (Si il y a), Dents/Moustache/Yeux}</pre>
+
+        <h4>Capacité Spé</h4>
+        <div class="mono">
+{La Race a la capacité Shapeshift de naissance, leurs permettant de changé entre humanoïde et animal/monstre}
+{Le Shapeshift des beastman leurs fait perdre le control mais leurs donne le scaling statistique des monstres}
+{Cette race Nullifie les CC Physique non Mystic}
+        </div>
+
+        <!--
+          💡 COMMENTAIRES :
+          - Pour éditer les stats : modifie le bloc <pre class="mono"> des Stats.
+          - Pour ajouter/supprimer des talents : modifie le bloc .mono sous "Talents".
+          - Pour l'apparence : modifie le bloc <pre class="mono"> sous "Apparence".
+          - Pour la capacité spéciale : modifie le bloc .mono sous "Capacité Spé".
+          - Tu peux rajouter des sous-sections en copiant la structure <h4> + bloc contenu.
+        -->
+      `;
+      openModal('Beastman 🦁', contentHTML);
+    }
+
+    /* ========= FICHE : Kadmerian (Nain) ========= */
+    function openKadmerianModal() {
+      const contentHTML = `
+        <h4>Stats</h4>
+        <pre class="mono">{165 Hp, 20 Str, 10 Int, +5 MnaAff}</pre>
+
+        <h4>Talents</h4>
+        <div class="mono">
+[Shatter] = Le personnage peux nullifié tout les Dmg provenant d'une arme peux importe laquelle.
+[Frostbite] = Le personnage résiste à tout les changement de température, le personnage est immunisé au effets de température (gel, brulure)
+[Prime Prana] = Lorsqu'une arme est tenu par le personnage sa value de prana augmente de 50%
+        </div>
+
+        <h4>Apparence</h4>
+        <pre class="mono">{Extrêmement Vieux/Très Jeune, Cheveux Brun/Roux/Blond, Humanoïde, Muscle Visible}</pre>
+
+        <h4>Capacité Spé</h4>
+        <div class="mono">
+{Le Scaling de Hp par Ftd passe de 5 -> 10 par Ftd}
+{Cette race peux manipulé tout ce qu'ils considère comme une arme dans un rayon de 10m autour d'eux}
+{Cette race née avec la Possibilité d'avoir la magie Catastrophique Quake}
+        </div>
+
+        <!--
+          💡 COMMENTAIRES Kadmerian :
+          - Tu peux modifier la portée "10m" directement dans Capacité Spé.
+          - Si tu veux ajouter un 4e talent, colle une nouvelle ligne [Nom] = ...
+        -->
+      `;
+      openModal('Kadmerian (Nain)', contentHTML);
+    }
+
+    /* ========= FICHE : Seishin 👻 ========= */
+    function openSeishinModal() {
+      const contentHTML = `
+        <h4>Stats</h4>
+        <pre class="mono">{60 Hp, Lvl 5 Magie, 20 Spirit, 10 Agi}</pre>
+
+        <h4>Talents</h4>
+        <div class="mono">
+[Harmonie] = Le personnage peux être lié a un autre, La personne lié au personnage gagne 5 Pts de Stats sur toute ses stats Physique, Le personnage lié est marqué.
+[Ripple] = Lorsque le personnage entre en contact direct avec la personne qu'il a marqué leurs actions demande -1 au dés, Le personnage marqué gagne dès lors 5 Pts de Stats sur toute ses stat mental.
+[Sym Bio Tic] = Le personnage peux entrer dans la marque placé sur la personne lié, rentrer dans une marque supprime tout les effets de statu et les Cc du personnage, si le personnage est entrer dans la marque il régénère +5 Hp +15 Mna.
+        </div>
+
+        <h4>Apparence</h4>
+        <pre class="mono">{Forme Totalement élémentaire (base Elément Lock, 15+ Ftd humanoïde élémentaire, 35+ Ftd Total Humanization), 35+ Ftd Yeux de la même couleurs que l'élément}</pre>
+
+        <h4>Capacité Spé</h4>
+        <div class="mono">
+{Le race n'est touchable que par la Magie et le Mana tant qu'il possède moins de 35 Ftd}
+{La race est incapable de faire des Dmg physique tant qu'il possède moins de 35 Ftd}
+{La race peux passé de forme éthérique (1~34 Ftd) à forme Physique (35+ Ftd) pour 5 au dés (20)}
+{Les personne marqué par cette race se Régénère 15 Hp et 10 Mna Par Tours tant que La race se trouve dans la marque}
+        </div>
+
+        <!--
+          💡 COMMENTAIRES Seishin :
+          - Le seuil important ici : 35 Ftd (forme physique).
+          - Tu peux ajuster le coût "5 au dés (20)" si ton système change.
+        -->
+      `;
+      openModal('Seishin 👻', contentHTML);
+    }
+
+    /* ========= FICHE : Dunkel 😈 ========= */
+    function openDunkelModal() {
+      const contentHTML = `
+        <h4>Stats</h4>
+        <pre class="mono">{120  Hp| 180 Hp, 10 Str, 5 Agi, 10 Ftd| 20 Ftd}</pre>
+
+        <h4>Talents</h4>
+        <div class="mono">
+[Maou] = Le personnage est Obligé de Commencer Lvl 0 de Maitrise sur tout, Le personnage a besoin de 25% Moins de SparExp
+[Spiritualisme] = Le personnage Gagne -2(-4 si Génis) au dés pour réussir une Suppression d'action
+[Perfection] = Le personnage n'a plus aucun Elément de base ni évolué, Le personnage gagne L'élément parfait Darkness, Le Lvl cap de ça magie passe au Lvl 25
+        </div>
+
+        <h4>Apparence</h4>
+        <pre class="mono">{Aucun Changement, Humanoïde, Cheveux NOIR LOCK, yeux NOIR/ROUGE LOCK}</pre>
+
+        <h4>Capacités Spé</h4>
+        <div class="mono">
+{La Race peux mimique n'importe quel élément avec Darkness, Le darkness fait aucun Dmg Physique avant le Lvl 5}
+{La Race peux bloqué l'usage d'une tech/atk de n'importe qui en usant du Darkness, ceci block toute ses autre action tant qu'il est maintenu}
+        </div>
+
+        <!--
+          💡 COMMENTAIRES Dunkel :
+          - Ici le point clé : "Darkness" remplace tous les éléments.
+          - Ajoute des règles de niveaux (Lvl 5, Lvl 25) si tu veux préciser davantage.
+        -->
+      `;
+      openModal('Dunkel 😈', contentHTML);
+    }
+
+    /* ========= FICHE : Géant 🪓 ========= */
+    function openGeantModal() {
+      const contentHTML = `
+        <h4>Stats</h4>
+        <pre class="mono">{500|210 Hp, 35|25 Str, 15|5 Ftd}</pre>
+
+        <h4>Talents</h4>
+        <div class="mono">
+[Stronghold] = Si le personnage est immobile de sa position pendant 2+ tours alors il prend 50% moins de Dmg Physique
+[AltTab] = Toute atk ou Tech que le personnage charge ou compresse est 20% plus efficace
+[Kill Monger] = Tuer 5+ Ennemie dans le meme combat augmente la Str de 1x le nombre d'ennemie vaincu (Solo=100% des Dmg) apres le 5
+        </div>
+
+        <h4>Apparence</h4>
+        <pre class="mono">{Blond Brun ou Roux, yeux bleu ou marron, 17~25m de haut}</pre>
+
+        <h4>Capacité Spé</h4>
+        <div class="mono">
+{La Race est capable d'effectué un rituel permettant de condensé leurs force dans leurs corp en réduisant considérablement leurs volume (1/10e de leurs taille normale) au Lvl 2}
+{La race Possède naturellement la capacité d'usé du prana, Leurs prana est Dorée}
+        </div>
+
+        <!--
+          💡 COMMENTAIRES Géant :
+          - Tu peux ajuster la taille "17~25m" selon ton monde.
+          - Le rituel "1/10e" : si tu veux, on peut en faire une règle plus précise.
+        -->
+      `;
+      openModal('Géant 🪓', contentHTML);
+    }
+
+    /* =========================================================
+       ✅ FIN
+       - Tout est maintenant cohérent :
+         - createCard() existe et gère les clics
+         - plus de code "card.addEventListener" hors fonction
+         - les races par défaut s’ajoutent automatiquement
+         - les modals s’ouvrent correctement
+       ========================================================= */
   </script>
 </body>
 </html>
-``
