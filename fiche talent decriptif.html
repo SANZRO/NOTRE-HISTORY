@@ -1,0 +1,536 @@
+/* ========= FICHE : Talents ========= */
+
+/* ========= FICHE : force ========= */
+function openforceModal() {
+  const contentHTML = `
+    <h4>Force — Talents Pool <small style="opacity:.7">[⚪]</small></h4>
+
+    <p class="mono" style="margin-bottom:10px">
+      <strong>Conditions d’obtention</strong> : chaque talent se débloque si sa condition est remplie.
+      <br>Le MJ peut ajuster les seuils/émoticônes selon le système (💪 = Force, 🩷 = HP, ❤️ = Dégâts, 🥊🤜 = m1 / coup de poing).
+    </p>
+
+    <h4>Talents</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin: 0;">
+        <li><strong>Bulk Up</strong> — <em>Condition</em> : posséder <strong>25(💪)+</strong><br>
+            <u>Effet</u> : La stat <strong>(💪)</strong> influe désormais sur les <strong>(🩷)</strong> du personnage.
+        </li>
+        <br>
+        <li><strong>Pump Up</strong> — <em>Condition</em> : avoir donné <strong>10+ m1 (🥊🤜)</strong> dans la run<br>
+            <u>Effet</u> : Les Dmg <strong>(❤️)</strong> au <strong>(🥊🤜)</strong> sont augmentés de <strong>( (💪)/2 )</strong>.
+        </li>
+        <br>
+        <li><strong>Arms Up</strong> — <em>Condition</em> : avoir <strong>bloqué 15+ m1 (🥊🤜)</strong><br>
+            <u>Effet</u> : La stat <strong>(💪)</strong> est prise en compte lorsqu’il doit bloquer une attaque.
+        </li>
+        <br>
+        <li><strong>Push Down</strong> — <em>Condition</em> : posséder <strong>45(💪)+</strong> et faire <strong>1m75+</strong><br>
+            <u>Effet</u> : Pour chaque point de <strong>(💪)</strong> au-dessus de la cible, le personnage inflige <strong>+2 Dmg (❤️)</strong>.
+        </li>
+        <br>
+        <li><strong>Rush Down</strong> — <em>Condition</em> : avoir subi un dégât retirant <strong>25% (🩷)+</strong> une fois<br>
+            <u>Effet</u> : À chaque palier de <strong>25% (🩷)</strong> perdu, le <strong>prochain coup (❤️)</strong> est <strong>Gilga drafté</strong>.
+        </li>
+        <br>
+        <li><strong>Hunt Down</strong> — <em>Condition</em> : avoir asséné <strong>5 attaques (❤️)</strong> à la tête sur une même cible<br>
+            <u>Effet</u> : Les coups vers une zone sensible n’ont plus de changement au dés (20) (12) (10).
+        </li>
+      </ol>
+    </div>
+
+    <h4>@SPECIALZ</h4>
+    <div class="mono">
+      Test d’affichage et refonte de certains talents obsolètes.
+    </div>
+  `;
+  openModal('Force — Talents Pool', contentHTML);
+}
+
+/* ========= FICHE : agilité ========= */
+function openagiliterModal() {
+  const contentHTML = `
+    <h4>Agilité — Pool de Talents <small style="opacity:.7">[⚪]</small></h4>
+    <p class="mono" style="margin-bottom:10px">
+      <strong>Conditions d’obtention</strong> : chaque talent se débloque si sa condition est remplie.
+      <br>Le MJ peut ajuster les seuils/émoticônes selon le système (🦵 = Agilité, ❤️ = Dégâts, 💪 = Force).
+    </p>
+    <h4>Talents</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin: 0;">
+        <li><strong>Mobilité</strong> — <em>Condition</em> : posséder <strong>10(🦵)+</strong><br>
+            <u>Effet</u> : Le personnage n'a pas besoin de séparer ses mouvements de ses actions, il gagne 1 Place de Priorité.
+        </li><br>
+        <li><strong>Fluidité</strong> — <em>Condition</em> : posséder <strong>25(🦵)+</strong><br>
+            <u>Effet</u> : Peut faire deux actions <strong>(❤️)</strong> en une pour plusieurs jets de dés (20), uniquement si les actions sont bien expliquées.
+        </li><br>
+        <li><strong>Course</strong> — <em>Condition</em> : avoir fait <strong>30+ actions(❤️)</strong> de déplacement dans une run<br>
+            <u>Effet</u> : Plus aucune pénalité de fuite, obtient la Tech <strong>(❤️ 🦵) Dash</strong>. À <strong>50(🦵)+</strong>, insensible au jet de rattrapage.
+        </li><br>
+        <li><strong>Coup de Pied Initial</strong> — <em>Condition</em> : avoir fui ou utilisé Dash 20 fois dans une run<br>
+            <u>Effet</u> : Pour chaque <strong>3(🦵)</strong>, gagne <strong>+1(💪)</strong>. À <strong>50(🦵)+</strong>, l’inverse s’applique (Stats naturelles uniquement).
+        </li><br>
+        <li><strong>Vélocité</strong> — <em>Condition</em> : posséder <strong>30(🦵)+</strong> et avoir commencé avec la première action d’un combat 3 fois dans une run<br>
+            <u>Effet</u> : Pour chaque <strong>7(🦵)</strong> de plus que la cible, laisse une image rémanente. Gagne 1 Place de Priorité.
+        </li>
+      </ol>
+    </div>
+    <h4>@SPÉCIAL</h4>
+    <div class="mono">Test d’affichage et refonte de certains talents obsolètes.</div>
+  `;
+  openModal('Agilité — Pool de Talents', contentHTML);
+}
+
+/* ========= FICHE : robustesse ========= */
+function openrobustesseModal() {
+  const contentHTML = `
+    <h4>Robustesse — Pool de Talents <small style="opacity:.7">[⚪]</small></h4>
+    <p class="mono"><strong>Conditions d’obtention</strong> : chaque talent se débloque si sa condition est remplie.</p>
+    <h4>Talents</h4>
+    <div class="mono">
+      <ol style="padding-left:18px;">
+        <li><strong>Imo</strong> — <em>Condition</em> : Ne pas agir lors de 15 atk ou tech étant destiné au personnage<br>
+            <u>Effet</u> : Réduit les dmg des atk ou tech de 10% si il n'agit pas, ne pas bouger donne +5(🛡️) Mgc et Phy.
+        </li><br>
+        <li><strong>Fortress</strong> — <em>Condition</em> : Avoir 2+ moyen de défense artificiel sur le personnage<br>
+            <u>Effet</u> : Peut défendre en utilisant un moyen artificiel ET naturel.
+        </li><br>
+        <li><strong>Brick Wall</strong> — <em>Condition</em> : Ne pas subir d'effet après avoir été touché par une atk 60x dans une run<br>
+            <u>Effet</u> : Peut refuser un effet 7x par combat (reset à chaque safe zone).
+        </li><br>
+        <li><strong>Cho'Gath-R</strong> — <em>Condition</em> : Avoir 25+(✊) et placé 7 Ult sur un ennemi<br>
+            <u>Effet</u> : Après avoir tué ou éliminé un adversaire avec un ult donne +6(🩷) permanent.
+        </li><br>
+        <li><strong>Foward</strong> — <em>Condition</em> : Avoir 45+(✊) et posséder au moins 5 tech<br>
+            <u>Effet</u> : +20%(🩷) total (après tous les boosts), pour chaque boost HP différent gagne +3 Dmg(❤️ ou 💙).
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Robustesse — Pool de Talents', contentHTML);
+}
+
+/* ========= FICHE : esquive automatique ========= */
+function openesquiveautoModal() {
+  const contentHTML = `
+    <h4>Esquive Automatique — Pool de Passifs <small style="opacity:.7">[⚪]</small></h4>
+    <h4>Passifs</h4>
+    <div class="mono">
+      <ol>
+        <li><strong>Fighting Reflex</strong> — <em>Condition</em> : Avoir 20+(🦵)<br>
+            <u>Effet</u> : Charge d'esquive (Max 3) tous les (3,5,7) M1(❤️) selon le lvl de maîtrise, permet d'esquiver une atk(❤️) sans tirage de dés.
+        </li><br>
+        <li><strong>Auto Dodge</strong> — <em>Condition</em> : Avoir 35+(🦵)<br>
+            <u>Effet</u> : Ne se fait pas toucher si l'attaquant n'a pas au moins 1/4 de la stat (🦵).
+        </li><br>
+        <li><strong>Escapist</strong> — <em>Condition</em> : Avoir 40+(🦵)<br>
+            <u>Effet</u> : Plus besoin de tirage de dés pour fuir un combat.
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Esquive Automatique — Pool de Passifs', contentHTML);
+}
+
+/* ========= FICHE : aura ========= */
+function openaurafarmModal() {
+  const contentHTML = `
+    <h4>Aura — Pool de Passifs <small style="opacity:.7">[⚪]</small></h4>
+    <h4>Passifs</h4>
+    <div class="mono">
+      <ol>
+        <li><strong>Posing</strong> — <em>Condition</em> : Avoir fait au moins TROIS fois une action "avec du flow"<br>
+            <u>Effet</u> : Jet avec dés 12 au lieu de (6,4).
+        </li><br>
+        <li><strong>Aura Farm</strong> — <em>Condition</em> : Avoir fini un ennemi avec une action stylée (pas de clip farming)<br>
+            <u>Effet</u> : +1(👤) pour chaque créature tuée avec style.
+        </li><br>
+        <li><strong>Picolo</strong> — <em>Condition</em> : Avoir proc Aura Farm 20 fois<br>
+            <u>Effet</u> : Début de combat : +(👤) Dmg(❤️ 💙) pendant 7 tours.
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Aura — Pool de Passifs', contentHTML);
+}
+
+/* ========= FICHE : tank ========= */
+function opentankModal() {
+  const contentHTML = `
+    <h4>Tank — Pool de Passifs <small style="opacity:.7">[⚪]</small></h4>
+    <h4>Passifs</h4>
+    <div class="mono">
+      <ol>
+        <li><strong>Fighting Reflex</strong> — <em>Condition</em> : Avoir 20+(✊)<br>
+            <u>Effet</u> : Charge (Max 2) de Grit (Ref: League of Legend Sett), -25% Dmg(❤️ 💙 🩶) pendant 2 tours, renvoie 50% des Dmg(❤️) reçus (Ref: Ryujin).
+        </li><br>
+        <li><strong>No.</strong> — <em>Condition</em> : Avoir 45+(✊)<br>
+            <u>Effet</u> : Ignore les Dmg(❤️) si l'attaquant a moins de 1/4 de (✊) du personnage en (💪).
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Tank — Pool de Passifs', contentHTML);
+}
+
+/* ========= FICHE : charisme ========= */
+function opencharismeModal() {
+  const contentHTML = `
+    <h4>Charisme — Pool de Talents <small style="opacity:.7">[⚪]</small></h4>
+
+    <p class="mono" style="margin-bottom:10px">
+      <strong>Conditions d’obtention</strong> : chaque talent se débloque si sa condition est remplie.
+      <br>(👤 = Charisme, ❤️ = Dégâts, 💙 = Dégâts magiques/mentaux, 🔱 = Sorts)
+    </p>
+
+    <h4>Talents</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin:0;">
+        <li>
+          <strong>Feather Charm</strong> — <em>Condition</em> : ‼️ Choisir un Lock l'autre ‼️
+          <br><u>Effet</u> :
+          <div style="margin-top:6px; margin-left:8px">
+            <em>Eagle Pride</em> — [Avoir 20(👤)+ et avoir usé d'intimidation sur un individu] :
+            Les Tech(❤️) et sort(🔱 ♻️) appliquent maintenant l'effet <strong>Pressured</strong>.<br>
+            <em>OU</em><br>
+            <em>Pristine Hawk</em> — [Avoir 20(👤)+ et avoir usé de charm (peu importe lequel) sur un individu] :
+            Les Tech(💙 🩶) et Sort(💙) appliquent maintenant l'effet <strong>Charmed</strong>.
+          </div>
+        </li>
+        <br>
+        <li>
+          <strong>Negotiation Antic</strong> — <em>Condition</em> : [Avoir 35(👤)+ et avoir acheté 5 objets(❤️ 💙 🔱)]
+          <br><u>Effet</u> : Les prix proposés au personnage seront réduits selon son (👤) si il le demande,
+          % de réduction = (👤) Pts.
+        </li>
+        <br>
+        <li>
+          <strong>Mind Melt</strong> — <em>Condition</em> : [Avoir 55(👤)+]
+          <br><u>Effet</u> : Lorsque l'effet <strong>Pressured</strong> est placé 3x sur une cible, alors tous les effets de statut(❤️ 🔱)
+          de la cible se retrouvent <strong>doublés</strong> et l'effet Pressured ira sur la personne la plus proche.
+          Lorsque l'effet <strong>Charmed</strong> est placé 4x sur une personne, elle aura 25% de chance de ne pas vouloir toucher le personnage et 50% de
+          toucher un allié à la place.
+        </li>
+        <br>
+        <li>
+          <strong>One Last Deal</strong> — <em>Condition</em> : [Avoir 50(👤)+ et avoir esquivé/bloqué un coup qui aurait été mortel]
+          <br><u>Effet</u> : Lorsque le personnage devrait recevoir un coup fatal(❤️ 💙), il a 20% de chance que l'attaquant rate son coup
+          et 5% qu'il touche un de ses alliés.
+        </li>
+        <br>
+        <li>
+          <strong>Rage Bait</strong> — <em>Condition</em> : [Agacé 25+ PNJ OU vraiment énervé un PNJ nommé]
+          <br><u>Effet</u> : Le personnage peut, pour <strong>16 -> 14 -> 12 -> 10 -> 8 -> 6 -> 4</strong> au dés (20), placer l'effet <strong>Angered</strong> sur une cible.
+          Les personnes touchées par l'effet Angered font <strong>+25(❤️)%</strong> de Dmg(❤️) mais ne peuvent qu'attaquer le personnage et
+          leur raté critique passe de <strong>3 -> 5</strong> au dés (20).
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Charisme — Pool de Talents', contentHTML);
+}
+
+/* ========= FICHE : intellect ========= */
+function openintellectModal() {
+  const contentHTML = `
+    <h4>Intellect — Pool de Talents <small style="opacity:.7">[⚪]</small></h4>
+
+    <p class="mono" style="margin-bottom:10px">
+      (🧠 = Intellect, 💧 = Mana, ❤️/💙/🩶/🤍 = types de dégâts)
+    </p>
+
+    <h4>Talents</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin:0;">
+        <li>
+          <strong>Enlightenment</strong> — <em>Condition</em> : [Avoir 25(🧠)+]
+          <br><u>Effet</u> : Pour chaque Lvl que le personnage gagnera après l'obtention de ce talent,
+          il gagne <strong>+15(💧)% Base</strong> en (💧) Max. Après le Lvl 10 le (💧) gagné passe à <strong>+20(💧)% Base</strong>.
+        </li>
+        <br>
+        <li>
+          <strong>Ascending Knowledge</strong> — <em>Condition</em> : [Avoir lu 2+ Livre(❤️ 🔱) Ancien et avoir 5(🧠)+]
+          <br><u>Effet</u> : Le personnage peut maintenant naturellement gagner en (🧠) avec les expériences et connaissances du quotidien
+          (<em>abusé de cela retirera de façon permanente de l'(🧠)</em>).
+        </li>
+        <br>
+        <li>
+          <strong>Superior Brain</strong> — <em>Condition</em> : [Avoir une Maîtrise(⚔️ 🗡️ 🪄 🏹 🎤 🔱 🤜) au-dessus du Lvl 3]
+          <br><u>Effet</u> : Pour chaque (🧠) Pts de plus que sa cible, le personnage fait <strong>+2 Dmg(❤️ 💙 🩶 🤍)</strong> supplémentaires.
+          Si l'excès dépasse <strong>45(🧠)</strong> le(s) coup(s) (❤️ 💙 🩶) seront des Dmg(🤍).
+        </li>
+        <br>
+        <li>
+          <strong>Leyered Mental</strong> — <em>Condition</em> : [Avoir 50(🧠)+]
+          <br><u>Effet</u> : Le personnage développe une couche d'(⛑️) se scalant sur son (🧠), <strong>1(🧠) = 1.5(⛑️)</strong>.
+          Lorsque cette couche est debout, le personnage est <strong>insensible aux CC mentaux non logiques (💙)</strong>.
+        </li>
+        <br>
+        <li>
+          <strong>Emporwerd</strong> — <em>Condition</em> :
+          [Avoir usé de toutes les tech(💙 ❤️ 🩶) du personnage (Les 8 tech et 2 ult de base) et avoir 35(🧠)+]
+          <br><u>Effet</u> : Le personnage gagne la possibilité d’<strong>Empower</strong> une tech(💙) ou un sort(💙) augmentant son coup de façon
+          exponentielle (<strong>x3~x4</strong>) mais <strong>double</strong> les Dmg(❤️ 💙) de celle-ci. Les tech(💙) et sort(💙) ayant l'effet Empower ont
+          leurs effets garantis de s'appliquer.
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Intellect — Pool de Talents', contentHTML);
+}
+
+/* ========= FICHE : gilga drafting ========= */
+function opengilgadraftingModal() {
+  const contentHTML = `
+    <h4>Gilga Drafting — Pool de Passifs <small style="opacity:.7">[🟪]</small></h4>
+
+    <h4>Passifs</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin:0;">
+        <li>
+          <strong>Itadori</strong> — <em>Condition</em> : [Avoir Enchaîné 3 gilga draft en UN combat]
+          <br><u>Effet</u> : Après un Gilga Draft le <strong>prochain coup(❤️)</strong> du personnage fera <strong>+10% Dmg(❤️ , 💙 🔱)</strong>
+          et sera plus facile de <strong>-1</strong> au dés (20) à la réalisation, l'effet se cumule jusqu'à ce que les gilga draft ne s'enchaînent plus.
+        </li>
+        <br>
+        <li>
+          <strong>Physical Condition</strong> — <em>Condition</em> : ‼️ Avoir un Lock les Autres ‼️
+          <div style="margin-top:6px; margin-left:8px">
+            <em>Lean</em> — [Avoir Perfect Vesky 2 coup fatal] :
+            Après une perfect vesky le personnage ne peut pas se faire toucher pendant 1 tour sauf par les aoe(❤️ 💙 🔱).<br>
+            <em>Jacked</em> — [Avoir Tanké 2 gilga draft grâce à sa (✊)] :
+            Le multiplicateur de Dmg(❤️ ,💙 🔱) des Gilga draft passe de <strong>x2 -> x2.5</strong>.<br>
+            <em>Heavy</em> — [Avoir l'air(👤) Extrêmement Lourd (90kg Min)] :
+            Le multiplicateur de Dmg(❤️ ,💙 🔱) des Gilga draft <em>contre le personnage</em> est réduit de <strong>x2 -> x1.5</strong>,
+            Les Gilga draft du personnage <strong>bypass</strong> les guard.
+          </div>
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Gilga Drafting — Pool de Passifs', contentHTML);
+}
+
+/* ========= FICHE : gilga draft ========= */
+function opengilgadraftModal() {
+  const contentHTML = `
+    <h4>Gilga Draft — Pool de Talents <small style="opacity:.7">[🔷]</small></h4>
+
+    <h4>Talents</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin:0;">
+        <li>
+          <strong>Power Discovery</strong> — <em>Condition</em> : [Avoir Fait 6 Gilga draft dans une run]
+          <br><u>Effet</u> : Le personnage obtient un <strong>dés (10)</strong> pour avoir une chance de Gilga Draft plus simplement.
+          Si le dés (20) et (10) sont tous deux des Gilga draft alors les Dmg(❤️) passent de <strong>x2 -> x3</strong>.
+        </li>
+        <br>
+        <li>
+          <strong>Combat Potential</strong> — <em>Condition</em> : [Atteindre le nombre de CC sur un individu de 15+ seul]
+          <br><u>Effet</u> : Lorsqu'une personne sur la zone est CC, le <strong>prochain coup(❤️)</strong> que le personnage va lui donner sera
+          forcément un <strong>Gilga Draft</strong>.
+        </li>
+        <br>
+        <li>
+          <strong>Punisher</strong> — <em>Condition</em> : [Arrêté 10 Fuite de Personne Humanoïde dans une run]
+          <br><u>Effet</u> : Le personnage peut maintenant arrêter une fuite pour <strong>7</strong> au dés (20). Si l'arrêt était une action(❤️) alors
+          elle sera automatiquement un <strong>Gilga Draft</strong>.
+        </li>
+        <br>
+        <li>
+          <strong>Another End</strong> — <em>Condition</em> : [Finir 25 Créature ou personne avec un Gilga Draft]
+          <br><u>Effet</u> : Lorsque le personnage tue quelque chose avec un Gilga draft alors <strong>tous les tours de CC</strong> qui étaient
+          destinés à la victime iront sur <strong>TOUTE</strong> les personnes présentes ou non.
+        </li>
+        <br>
+        <li>
+          <strong>Me to Everything 💢</strong> — <em>Condition</em> : [GILGA CRIT LOCK.]
+          <br><u>Effet</u> : Le personnage devient <strong>immunisé</strong> au CC provenant de Gilga Draft, le personnage <strong>annule ses propres</strong> gilga draft.
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Gilga Draft — Pool de Talents', contentHTML);
+}
+
+/* ========= FICHE : points de vie ========= */
+function openhealthpointModal() {
+  const contentHTML = `
+    <h4>Points de Vie — Pool de Passifs <small style="opacity:.7">[🔷]</small></h4>
+
+    <p class="mono" style="margin-bottom:10px">
+      (🩷 = HP, 🛡️ = Défense, ❤️/💙/🩶/🤍/❤️‍🔥/💜/❤️‍🩹 = types de dégâts)
+    </p>
+
+    <h4>Passifs</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin:0;">
+        <li>
+          <strong>Anomaly</strong> — <em>Condition</em> : [Avoir 350(🩷)+]
+          <br><u>Effet</u> : Tant que le personnage est à <strong>100%(🩷)</strong> il gagne <strong>+10%</strong> Dmg(❤️ 💙 🩶 🤍 ❤️‍🔥 💜 ❤️‍🩹).
+        </li>
+        <br>
+        <li>
+          <strong>Tank Engine</strong> — <em>Condition</em> : [Avoir 40(🛡️)+ Def Phy ou Mag]
+          <br><u>Effet</u> : Pour chaque <strong>Kill Solo</strong> du personnage il gagne <strong>+10(🩷)% Base</strong> à ses (🩷) Max.
+        </li>
+        <br>
+        <li>
+          <strong>Aboslute Unit</strong> — <em>Condition</em> : [Avoir Prie 1000 Dmg(❤️ 💙) en ayant 501(🩷)- en un combat]
+          <br><u>Effet</u> : Après un <strong>Block</strong> le personnage gagne des (🩷) <strong>temporaires</strong> jusqu'à ce qu'il soit à full (🩷)
+          ou qu'il se prenne un dmg(❤️ 💙 🔱 🤍 🩶).
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Points de Vie — Pool de Passifs', contentHTML);
+}
+
+/* ========= FICHE : M1 ========= */
+function openm1Modal() {
+  const contentHTML = `
+    <h4>M1 — Pool de Passifs <small style="opacity:.7">[🔷]</small></h4>
+
+    <h4>Passifs</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin:0;">
+        <li>
+          <strong>Casual</strong> — <em>Condition</em> : [Faire 30 M1 et en toucher 2/3 en UN combat]
+          <br><u>Effet</u> : Le personnage utilisera une de ses stats physiques (🦵, 💪, ✊) pour booster ses M1 de façon permanente :
+          <br>(💪) : Ajoute des Dmg(❤️) flat aux M1
+          <br>(🦵) : Réduit l'esquive contre les M1 de la cible
+          <br>(✊) : Réduit la possibilité de parry les M1 de la cible
+        </li>
+        <br>
+        <li>
+          <strong>Flow State</strong> — <em>Condition</em> : [Placer 7 M1 sur une personne sans qu'elle ne puisse réagir (esquive, parry, block)]
+          <br><u>Effet</u> : Tous les prochains M1 du personnage après avoir enchaîné 3 M1 sur la personne sont impossibles à parry jusqu'à un perfect parry.
+        </li>
+        <br>
+        <li>
+          <strong>Promise</strong> — <em>Condition</em> : [Rater 5 M1 de suite puis toucher 5 M1 de suite]
+          <br><u>Effet</u> : Après qu'un M1 du personnage ait manqué, il peut changer de cible (ce sera toujours son tour) mais ne pourra pas M1 sur cette nouvelle cible.
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('M1 — Pool de Passifs', contentHTML);
+}
+
+/* ========= FICHE : Volonté ========= */
+function openvolonteModal() {
+  const contentHTML = `
+    <h4>Volonté — Pool de Talents <small style="opacity:.7">[⚪]</small></h4>
+
+    <h4>Talents</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin:0;">
+        <li>
+          <strong>Sérénity</strong> — <em>Condition</em> : [Avoir 1(🟨)+ Sortable]
+          <br><u>Effet</u> : Lorsque le (🟨) est actif, le personnage est inaffecté par les CC mentaux. Au lieu de se faire CC, il perd du (⛑️).
+        </li>
+        <br>
+        <li>
+          <strong>Piece of Mind</strong> — <em>Condition</em> : [Avoir résisté UNE fois à un CC Mental en usant de (🪖)]
+          <br><u>Effet</u> : Le personnage peut transmettre ses intentions aux gens. Après 40(🪖)+, ses intentions peuvent CC et faire des Dmg(⛑️).
+        </li>
+        <br>
+        <li>
+          <strong>Sound Mind</strong> — <em>Condition</em> : [Avoir 275(⛑️)+ et perdre -100(⛑️)+ en UN combat]
+          <br><u>Effet</u> : Tous les Dmg(⛑️) futurs sont réduits de moitié. Le personnage gagne des Dmg(❤️) en fonction de (🪖) avec ses armes(⚔️).
+        </li>
+        <br>
+        <li>
+          <strong>Deep Inside</strong> — <em>Condition</em> : [Avoir 50(🪖)+]
+          <br><u>Effet</u> : Le personnage peut lancer un combat mental avec une cible (Ref: Naruto Itachi Mangekyo). Lors de ce combat, seuls les (⛑️) sont comptés.
+        </li>
+        <br>
+        <li>
+          <strong>Mind Eyes {}</strong> — <em>Condition</em> : [Avoir 70(🪖)+]
+          <br><u>Effet</u> :
+          <br>Truth : Voit au travers des mensonges et perçoit toutes les énergies.
+          <br>Link : Relie tous les types d'énergie ressentis, peut aussi lier les pensées.
+          <br>Seek : Retrouve toute énergie vue, aperçue ou sentie dans sa vie, voit au travers des mécanismes.
+          <br>Decay : Efface ou dissipe des énergies, toute énergie dissipée revient sous une autre forme ou la même si nécessaire.
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Volonté — Pool de Talents', contentHTML);
+}
+
+/* ========= FICHE : Ki ========= */
+function openkiModal() {
+  const contentHTML = `
+    <h4>Ki — Pool de Passifs <small style="opacity:.7">[🟪]</small></h4>
+
+    <h4>Passifs</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin:0;">
+        <li>
+          <strong>Progression High</strong> — <em>Condition</em> : [Gagné +500(🟥)+ en UNE run]
+          <br><u>Effet</u> : Le personnage est imperméable aux aléas et à la température (pas au CC). Il gagne une résistance au CC de -2 tours.
+        </li>
+        <br>
+        <li>
+          <strong>Akuma 💢</strong> — <em>Condition</em> : [Faire 1000 Dmg(❤️) avec son (🟥) en une run]
+          <br><u>Effet</u> : Le personnage émet en permanence une aura restrictive : toute personne à 2 realms de lui se verra CC.
+        </li>
+        <br>
+        <li>
+          <strong>Monstruosity</strong> — <em>Condition</em> : [Avoir une condition(🟥) spéciale et avoir gagné +100(🟥) en une run]
+          <br><u>Effet</u> : La condition spéciale du personnage évoluera dans une direction spécialisée pour lui.
+        </li>
+        <br>
+        <li>
+          <strong>Wuxia</strong> — <em>Condition</em> : [Posséder dans son panel une technique(🟥) dite wuxienne]
+          <br><u>Effet</u> : Le personnage gagnera plus de (🟥) lors de ses sessions d'entraînement.
+        </li>
+        <br>
+        <li>
+          <strong>Manhua</strong> — <em>Condition</em> : [Entrer dans le DouQi 'Existence']
+          <br><u>Effet</u> : Le personnage ne peut maintenant absorber et cultiver que du (🟥) sans effets secondaires. Il peut désactiver ce passif s'il le souhaite.
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Ki — Pool de Passifs', contentHTML);
+}
+
+/* ========= FICHE : Chi ========= */
+function openchiModal() {
+  const contentHTML = `
+    <h4>Chi — Pool de Talents <small style="opacity:.7">[🚫]</small></h4>
+
+    <h4>Talents</h4>
+    <div class="mono">
+      <ol style="padding-left:18px; margin:0;">
+        <li>
+          <strong>Adept</strong> — <em>Condition</em> : [Avoir activé son (🟨) sortable 35 fois dans une run]
+          <br><u>Effet</u> : La consommation de (⛑️) est diminuée de moitié lorsque le (🟨) est actif. Les Dmg(❤️) supplémentaires du (🟨) passent de 2 -> 3.
+        </li>
+        <br>
+        <li>
+          <strong>Batisme</strong> — <em>Condition</em> : [Atteindre la moitié de son (🟨) Max en (🟨) sortable]
+          <br><u>Effet</u> : Le personnage peut maintenant infuser son (🟨) dans tous les objets inanimés, même si ce ne sont pas des armes.
+        </li>
+        <br>
+        <li>
+          <strong>Gym Badge</strong> — <em>Condition</em> : [Avoir une arme Soul Meta ET avoir 75(🟨)% Max en sortable]
+          <br><u>Effet</u> : Ce talent oblige toute entité présente dans le corps du personnage à une obéissance totale. Si le personnage a 40(🪖)-, les ordres ne sont plus absolus.
+        </li>
+        <br>
+        <li>
+          <strong>Sinister</strong> — <em>Condition</em> : [Avoir 100(🟨)% Max sortable]
+          <br><u>Effet</u> : Le personnage a maintenant accès aux techniques Sinistres. Lorsqu'il active 100(🟨)%, il crée un void où tous les Dmg(💜 ❤️‍🔥 💚 ⚡ 🔥 ❄️ 💥 🌧️ ❤️‍🩹) (Dmg par tic) sont annulés et il gagne 10(🩷)% de sa cible en Dmg(🤍).
+        </li>
+        <br>
+        <li>
+          <strong>Soul Shatter</strong> — <em>Condition</em> : [Avoir 100(🟨)% Max sortable]
+          <br><u>Effet</u> : Le personnage peut obliger le retrait de toute énergie mentale de toute personne dans la zone.
+        </li>
+      </ol>
+    </div>
+  `;
+  openModal('Chi — Pool de Talents', contentHTML);
+}

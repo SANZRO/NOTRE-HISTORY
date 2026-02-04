@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wiki Authentifié</title>
+
+  <!-- Lien vers la feuille de style séparée -->
+  styles.css
+</head>
+<body>
+  <h1>Bienvenue dans notre history</h1>
+
+  <!-- ==========================================================
+       MODIF #5 : Fond CIEL BLEU + NUAGES (visible à l'accueil)
+       ========================================================== -->
+  <div class="bg sky" id="bgSky" aria-hidden="true">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+    <div class="cloud cloud-4"></div>
+  </div>
+
+  <!-- ==========================================================
+       MODIF #6 : Fond CIEL ÉTOILÉ + ÉTOILE FILANTE (après login)
+       ========================================================== -->
+  <div class="bg stars" id="bgStars" aria-hidden="true">
+    <!-- Les étoiles seront générées en JS -->
+    <div class="shooting-star" id="meteorOne"></div>
+  </div>
+
+  <!-- Connexion -->
+  <div class="login-form login-card">
+    <h2>Connexion</h2>
+    <form id="loginForm">
+      <div>
+        <label for="username">Nom d'utilisateur :</label>
+        <input type="text" id="username" autocomplete="username" required />
+      </div>
+      <div>
+        <label for="password">Mot de passe :</label>
+        <input type="password" id="password" autocomplete="current-password" required />
+      </div>
+      <div class="actions">
+        <button type="submit">Se connecter</button>
+        <!-- MODIF #2 : bouton pour réinitialiser le mot de passe -->
+        <button type="button" id="resetBtn">Réinitialiser le mot de passe</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Contenu Wiki (affiché après login) -->
+  <div class="content wiki-card" id="wikiContent">
+    <!-- MODIF #3 : message de bienvenue après connexion -->
+    <p class="welcome" id="welcomeMsg"><!-- rempli en JS après authentification --></p>
+
+    <h2>Ajouter un article</h2>
+    <form id="articleForm">
+      <div>
+        <label for="title">Titre :</label>
+        <input type="text" id="title" required />
+      </div>
+      <div>
+        <label for="body">Contenu :</label>
+        <textarea id="body" required></textarea>
+      </div>
+      <button type="submit">Ajouter</button>
+    </form>
+
+    <h2>Articles</h2>
+    <div id="articles"></div>
+  </div>
+
+  <!-- =========================
+       JavaScript (inline)
+       ========================= -->
+  <script>
+    /* ==========================================================
+       Comptes côté client (démo)
+       ========================================================== */
+
+    /**
+     * MODIF #1 : Comptes par défaut
+     *   - admin / password
+     *   - sanz  / Sanzro
+     *   - TEST  / TEST   (MODIF #4)
+     *
+     * MODIF #2 : Persistance dans localStorage + réinitialisation
+     */
+    const STORAGE_KEY = 'demo_wiki_users_v1';
+    const DEFAULT_USERS = {
+      admin: 'password',
+      sanz: 'Sanzro',
+      TEST: 'TEST'
+    };
+    function loadUsers() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return { ...DEFAULT_USERS, ...JSON.parse(raw) };
+      } catch (e) { console.warn(e); }
+      return { ...DEFAULT_USERS };
+    }
+    function saveUsers(users) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(users)); } catch (e) { console.warn(e); }
+    }
+    let users = loadUsers();
+
+    /* ==========================================================
+       MODIF #5 + #6 : Gestion des fonds animés
+       - Sky visible au départ
+       - Stars visible après connexion
+       - Génération d'étoiles en JS
+       ========================================================== */
+    const bgSky   = document.getElementById('bgSky');
+    const bgStars = document.getElementById('bgStars');
+
+    function showSky()   { bgSky.style.display = 'block'; bgStars.style.display = 'none'; }
+    function showStars() { bgSky.style.display = 'none';  bgStars.style.display = 'block'; }
+
+    /* Génère N étoiles à des positions aléatoires avec animation "twinkle" */
+    function generateStars(count = 120) {
+      // Nettoie les étoiles existantes
+      bgStars.querySelectorAll('.star').forEach(s => s.remove());
+
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() < 0.85 ? 2 : 3; // quelques étoiles légèrement plus grandes
+        star.style.width  = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left   = (Math.random() * 100) + 'vw';
+        star.style.top    = (Math.random() * 100) + 'vh';
+        // Twinkle variable pour chaque étoile
+        star.style.animationDuration = (1.6 + Math.random() * 2.4) + 's';
+        star.style.animationDelay    = (Math.random() * 2) + 's';
+        bgStars.appendChild(star);
+      }
+
+      // Petite variante sur l'étoile filante : délai aléatoire
+      const meteor = document.getElementById('meteorOne');
+      if (meteor) {
+        meteor.style.animationDelay = (Math.random() * 3) + 's';
+      }
+    }
+
+    /* Affiche le ciel bleu au chargement de la page */
+    document.addEventListener('DOMContentLoaded', showSky);
+
+    /* ==========================================================
+       Connexion
+       ========================================================== */
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const username = (document.getElementById('username').value || '').trim();
+      const password = document.getElementById('password').value;
+
+      if (!username) {
+        alert('Veuillez entrer un nom d\'utilisateur.');
+        return;
+      }
+
+      const expected = users[username];
+
+      if (expected && password === expected) {
+        // Authentification OK
+        document.querySelector('.login-form').style.display = 'none';
+        document.getElementById('wikiContent').style.display = 'block';
+
+        // MODIF #3 : message de bienvenue après connexion
+        document.getElementById('welcomeMsg').textContent =
+          \`Bienvenue dans le wiki de notre history, \${username} !\`;
+
+        // MODIF #6 : passe au fond "ciel étoilé + étoile filante"
+        showStars();
+        generateStars(140); // génère ~140 étoiles
+
+        // Nettoyage des champs de login
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+      } else {
+        alert('Nom d\'utilisateur ou mot de passe incorrect.');
+      }
+    });
+
+    /* ==========================================================
+       MODIF #2 : Réinitialisation du mot de passe
+       ========================================================== */
+    document.getElementById('resetBtn').addEventListener('click', function() {
+      const username = (prompt('Entrez le nom d\'utilisateur à réinitialiser :') || '').trim();
+
+      if (!username) {
+        alert('Réinitialisation annulée (aucun utilisateur saisi).');
+        return;
+      }
+
+      if (!users.hasOwnProperty(username)) {
+        const create = confirm(\`L'utilisateur "\${username}" n'existe pas. Voulez-vous le créer ?\`);
+        if (!create) return;
+      }
+
+      const newPwd = prompt(\`Entrez le nouveau mot de passe pour "\${username}" :\`);
+      if (!newPwd) {
+        alert('Réinitialisation annulée (aucun mot de passe saisi).');
+        return;
+      }
+
+      users[username] = newPwd;
+      saveUsers(users);
+      alert(\`Mot de passe mis à jour pour "\${username}".\`);
+    });
+
+    /* ==========================================================
+       Articles
+       ========================================================== */
+    document.getElementById('articleForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const title = (document.getElementById('title').value || '').trim();
+      const body  = (document.getElementById('body').value  || '').trim();
+
+      if (!title || !body) {
+        alert('Veuillez renseigner le titre et le contenu.');
+        return;
+      }
+
+      const articleDiv = document.createElement('div');
+      articleDiv.className = 'article';
+
+      const h3 = document.createElement('h3'); h3.textContent = title;
+      const p  = document.createElement('p');  p.textContent  = body;
+
+      articleDiv.appendChild(h3);
+      articleDiv.appendChild(p);
+      document.getElementById('articles').appendChild(articleDiv);
+
+      document.getElementById('title').value = '';
+      document.getElementById('body').value  = '';
+    });
+  </script>
+</body>
+</html>

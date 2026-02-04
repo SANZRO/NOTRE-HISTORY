@@ -1,0 +1,36 @@
+const descriptions = {
+    // --- Adjectifs & Types de Dégâts ---
+    "❤️": "Physique (Adjectif / Dmg / Effect / Tic %Health)",
+    "💙": "Magique (Adjectif / Dmg / Effect)",
+    "⚜️": "Mystique (Adjectif / Dmg / Effect)",
+    "♻️": "Witchcraft / Witch / Puissance du Vis",
+    "⛑️": "Mental (Adjectif / Dmg Type)",
+    "🤍": "True Damage (Bypasse la défense)",
+    "💜": "Poison (Dmg Type / Tic Dmg)",
+    "💚": "Maladie (Dmg Type)",
+    "💧": "Mana (Stat Type / Effect Type)",
+    "🪯": "(Spécial) Save Stat",
+    "🔥": "Brulure (Tic Dmg)",
+    "🩹": "Saignement (Tic Dmg)",
+    "❄️": "Cryogénisation (Tic Dmg)",
+    "🖤": "Electrique (Tic Dmg)",
+    "🩶": "Mana (Dmg Type)",
+
+    // --- Stats Types (Image 2) ---
+    "💪": "Force Physique",
+    "🦵": "Vitesse Physique",
+    "✊": "Resistance Physique",
+    "🧠": "Intelligence / Capacité de réflexion",
+    "🪖": "Resistance Mental",
+    "👤": "Force Presence / Beauté / Terreur induite / Apparence",
+    "🌊": "Puissance Par Mana",
+    "💦": "Affinité au Mana",
+    "🟥": "Qǐyuán | Ki / Puissance Etheric Physique",
+    "🟨": "Chi Max / Puissance Etheric de l'âme",
+    "🔴": "DouQi / Realm (Etage) de puissance du Ki",
+    "🟡": "Chi Sortable / Quantité de Chi Sortable",
+    "✖️": "Statistique Fusionnée Ki-Mana",
+    "➕": "Statistique Fusionnée Ki-Chi",
+    "⚛️": "(Spécial)",
+    "➖": "Endurance Physique"
+};

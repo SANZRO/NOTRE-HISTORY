@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -168,6 +167,41 @@
       white-space: pre-wrap;
     }
   </style>
+
+
+
+<style>
+/*=== Forcer une seule ligne + scroll horizontal sur le board === */
+#trelloBoard {
+  overflow-x: auto;    /* active le scroll horizontal dans le board */
+  overflow-y: hidden;
+  padding-bottom: 8px; /* petit espace pour la barre de scroll */
+}
+
+/* Les colonnes restent sur UNE SEULE LIGNE */
+#trelloColumns {
+  display: flex;
+  flex-wrap: nowrap;   
+  gap: 20px;
+  width: max-content;  /* la largeur suit le contenu -> permet le scroll horizontal */
+}
+
+/* Largeur fixe par colonne (ajuste 320px si besoin) */
+.trello-column {
+  flex: 0 0 320px;     
+  min-width: 320px;    
+}
+
+/* (Optionnel) compact sur petit écran */
+@media (max-width: 600px) {
+  .trello-column {
+    flex-basis: 280px;
+    min-width: 280px;
+  }
+} 
+</style>
+</head>
+
 </head>
 <body>
   <!-- Fond étoilé -->
@@ -176,7 +210,7 @@
   </div>
 
   <header>
-    <h1>Trello — Races, Talent, Classe</h1>
+    <h1>Trello — Races, Talent, Classe, trait, magie, arme</h1>
     <button class="btn" id="backBtn">⟵ Retour à l’accueil</button>
   </header>
 
@@ -227,9 +261,47 @@
           </div>
         </div>
 
-      </div>
-    </section>
-  </main>
+
+<!-- ===== TRAIT ===== -->
+<div class="trello-column" data-column="trait">
+  <h2>Trait</h2>
+  <div class="descRow">
+    <button class="toggleBtn" type="button">Afficher / Masquer</button>
+  </div>
+  <textarea class="hidden-content" placeholder="Décris ici les traits..."></textarea>
+  <div class="trello-list" aria-label="Liste de cartes — Trait"></div>
+  <div class="actionsRow">
+    <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+  </div>
+</div>
+
+<!-- ===== MAGIE ===== -->
+<div class="trello-column" data-column="magie">
+  <h2>Magie</h2>
+  <div class="descRow">
+    <button class="toggleBtn" type="button">Afficher / Masquer</button>
+  </div>
+  <textarea class="hidden-content" placeholder="Décris ici les magies..."></textarea>
+  <div class="trello-list" aria-label="Liste de cartes — Magie"></div>
+  <div class="actionsRow">
+    <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+  </div>
+</div>
+
+<!-- ===== ARME ===== -->
+<div class="trello-column" data-column="arme">
+  <h2>Arme</h2>
+  <div class="descRow">
+    <button class="toggleBtn" type="button">Afficher / Masquer</button>
+  </div>
+  <textarea class="hidden-content" placeholder="Décris ici les armes..."></textarea>
+  <div class="trello-list" aria-label="Liste de cartes — Arme"></div>
+  <div class="actionsRow">
+    <button type="button" class="addCardBtn">+ Ajouter une carte</button>
+  </div>
+</div>
+``
+
 
   <!-- ===== Modal générique d’info (utilisé pour Beastman et futures fiches) ===== -->
   <div id="infoModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -290,53 +362,29 @@
       races:  { desc: '', cards: [] },
       talent: { desc: '', cards: [] },
       classe: { desc: '', cards: [] },
+      trait:  { desc: '', cards: [] },
+      magie:  { desc: '', cards: [] },
+      arme:  { desc: '', cards: [] },
       ...loadState()
     };
 
-    /* =========================================================
-       3) RACES PAR DÉFAUT (Injection automatique)
-       - Ici tu définis les cartes de race qui doivent exister au chargement.
-       - IMPORTANT : on ne les duplique pas si elles sont déjà présentes.
-       ========================================================= */
-    const DEFAULT_RACES = [
-      'Beastman 🦁',
-      'Kadmerian (Nain)',
-      'Seishin 👻',
-      'Dunkel 😈',
-      'Géant 🪓' ,
-      'Qoog ' ,
-      'Lizardman ' ,
-      'Chitine ' ,
-      'Samshioune ' , 
-      'Riviera' ,
-      'Witch' ,
-      'Manifest' ,
-      'Vampire' ,
-      'Driade' ,
-      'Dokaebi' ,
-      'Ouga' ,
-      'Undead' ,
-      'Shinobi' ,
-      'Deep Sea' ,     
-      'Elf' ,
-      'Yaugestor' ,
-      'Oni' ,
-      'AID' ,
-      'Volture' ,
-      'Emporium' ,
-      'Humain' ,
-      'Fishman' ,
-      'Hymne' ,
-      'TAZ'
-    ];
+    
 
-    if (!Array.isArray(appState.races.cards)) appState.races.cards = [];
-    DEFAULT_RACES.forEach(raceLabel => {
-      if (!appState.races.cards.includes(raceLabel)) {
-        appState.races.cards.push(raceLabel);
-      }
-    });
-    saveState(appState);
+
+ /*===== TALENTS PAR DÉFAUT =====*/
+const DEFAULT_TALENT = [
+  'Force ⚪ — Talents Pool'
+];
+
+if (!Array.isArray(appState.talent.cards)) appState.talent.cards = [];
+DEFAULT_TALENT.forEach(t => {
+  if (!appState.talent.cards.includes(t)) {
+    appState.talent.cards.push(t);
+  }
+});
+saveState(appState);
+
+
 
     /* =========================================================
        4) TRELLO LOGIQUE
@@ -388,44 +436,20 @@
          - Exemple :
            if (key.includes('elf')) openElfModal();
          ------------------------------------------------------- */
-      card.addEventListener('click', () => {
-        const key = normalizeText(text);
+     
 
-        if (key.includes('beastman')) openBeastmanModal();
-        else if (key.includes('kadmerian')) openKadmerianModal();
-        else if (key.includes('seishin')) openSeishinModal();
-        else if (key.includes('dunkel')) openDunkelModal();
-        else if (key.includes('geant')) openGeantModal();
-      //else if (key.includes('Qoog')) openGeantModal();
-      //else if (key.includes(Lizardman')) openGeantModal();
-      //else if (key.includes('Chitine')) openGeantModal();
-      //else if (key.includes('Samshioune')) openGeantModal();
-      //else if (key.includes('Riviera')) openGeantModal();
-      //else if (key.includes('Witch')) openGeantModal();
-      //else if (key.includes('Manifest')) openGeantModal();
-      //else if (key.includes('Vampire')) openGeantModal();
-      //else if (key.includes('Driade')) openGeantModal();
-      //else if (key.includes('Dokaebi')) openGeantModal();
-      //else if (key.includes('Ouga')) openGeantModal();
-      //else if (key.includes('Undead')) openGeantModal();
-      //else if (key.includes('Shinobi')) openGeantModal();
-      //else if (key.includes('Deep Sea')) openGeantModal();
-      //else if (key.includes('Elf')) openGeantModal();
-      //else if (key.includes('Yaugestor')) openGeantModal();
-      //else if (key.includes('Oni')) openGeantModal();
-      //else if (key.includes('Aid')) openGeantModal();
-      //else if (key.includes('Volture')) openGeantModal();
-      //else if (key.includes('Emporium')) openGeantModal();
-      //else if (key.includes('Humain')) openGeantModal();
-      //else if (key.includes('Fishman')) openGeantModal();
-      //else if (key.includes('Hymne')) openGeantModal();
-      //else if (key.includes('TAZ')) openGeantModal();
-       
-        // else : si ce n’est pas une race connue, on ne fait rien.
-      });
 
-      return card;
+/* Helper : tente d’ouvrir un talent si le texte correspond à une entrée */
+function tryOpenTalentByKey(keyNorm) {
+  for (const token in TALENT_ROUTES) {
+    if (keyNorm.includes(token)) {
+      TALENT_ROUTEStoken;  // <-- correction ici
+      return true;
     }
+  }
+  return false;
+}
+
 
     /* ---------------------------------------------------------
        syncFromDOMToState(colKey)
@@ -446,7 +470,7 @@
        - reconstruit toutes les colonnes à partir de appState
        --------------------------------------------------------- */
     function renderState() {
-      ['races', 'talent', 'classe'].forEach(colKey => {
+      ['races', 'talent', 'classe', 'trait', 'magie', 'arme'].forEach(colKey => {
         const colEl = document.querySelector(`.trello-column[data-column="${colKey}"]`);
         const listEl = colEl.querySelector('.trello-list');
         const area   = colEl.querySelector('.hidden-content');
@@ -566,176 +590,27 @@
       if (e.target === infoModalOverlay) closeModal();
     });
 
-    /* =========================================================
-       11) FICHES RACES (MODALS)
-       - Chaque fonction = 1 race
-       - Pour en ajouter une :
-         1) Ajoute son label dans DEFAULT_RACES
-         2) Crée une fonction openTaRaceModal()
-         3) Ajoute une condition dans createCard() (click)
-       ========================================================= */
 
-    /* ========= FICHE : Beastman 🦁 ========= */
-    function openBeastmanModal() {
-      const contentHTML = `
-        <h4>Stats</h4>
-        <pre class="mono">{170 Hp, 10 Str, 10 Agi, 10 Ftd, Lvl 3 Poing/Pied}</pre>
 
-        <h4>Talents</h4>
-        <div class="mono">
-[Animal Instinct] = Lorsque le personnage tombe à moins de 25% Hp il devra faire moins au dés (20) pour esquivé (-3)
-[Primitive Instinct] = Lorsque le Personnage tombe à moins de 50% Hp il fait +75% de Dmg avec son corp
-[Survival Instinct] = Le personnage peux détecté lorsqu'un individue a une plus grande valeurs de stats sur une de ses stats physique, il peux dire laquelle.
-        </div>
+/* ========= FICHE : Force========= */
+/*function openforceModal() {
+  const contentHTML = `
+<h4>Stats</h4><pre> </pre>
+<h4> mot </h4><div>  </div>
+<h4> </pre>
+<h4> </div>
+  `.trim();
+  openModal('force', contentHTML);
+}
+   /* ================== sauter de ligne restreint dans les paragraphe ======================= */
 
-        <h4>Apparence</h4>
-        <pre class="mono">{Oreille animal, Queue (Si il y a), Dents/Moustache/Yeux}</pre>
+function minifyHTML(html) {
+  return html
+    .replace(/\n\s+/g, ' ')   // retire l’indentation
+    .replace(/\s{2,}/g, ' ')  // compresse les espaces multiples
+    .trim();
+}
 
-        <h4>Capacité Spé</h4>
-        <div class="mono">
-{La Race a la capacité Shapeshift de naissance, leurs permettant de changé entre humanoïde et animal/monstre}
-{Le Shapeshift des beastman leurs fait perdre le control mais leurs donne le scaling statistique des monstres}
-{Cette race Nullifie les CC Physique non Mystic}
-        </div>
-
-        <!--
-          💡 COMMENTAIRES :
-          - Pour éditer les stats : modifie le bloc <pre class="mono"> des Stats.
-          - Pour ajouter/supprimer des talents : modifie le bloc .mono sous "Talents".
-          - Pour l'apparence : modifie le bloc <pre class="mono"> sous "Apparence".
-          - Pour la capacité spéciale : modifie le bloc .mono sous "Capacité Spé".
-          - Tu peux rajouter des sous-sections en copiant la structure <h4> + bloc contenu.
-        -->
-      `;
-      openModal('Beastman 🦁', contentHTML);
-    }
-
-    /* ========= FICHE : Kadmerian (Nain) ========= */
-    function openKadmerianModal() {
-      const contentHTML = `
-        <h4>Stats</h4>
-        <pre class="mono">{165 Hp, 20 Str, 10 Int, +5 MnaAff}</pre>
-
-        <h4>Talents</h4>
-        <div class="mono">
-[Shatter] = Le personnage peux nullifié tout les Dmg provenant d'une arme peux importe laquelle.
-[Frostbite] = Le personnage résiste à tout les changement de température, le personnage est immunisé au effets de température (gel, brulure)
-[Prime Prana] = Lorsqu'une arme est tenu par le personnage sa value de prana augmente de 50%
-        </div>
-
-        <h4>Apparence</h4>
-        <pre class="mono">{Extrêmement Vieux/Très Jeune, Cheveux Brun/Roux/Blond, Humanoïde, Muscle Visible}</pre>
-
-        <h4>Capacité Spé</h4>
-        <div class="mono">
-{Le Scaling de Hp par Ftd passe de 5 -> 10 par Ftd}
-{Cette race peux manipulé tout ce qu'ils considère comme une arme dans un rayon de 10m autour d'eux}
-{Cette race née avec la Possibilité d'avoir la magie Catastrophique Quake}
-        </div>
-
-        <!--
-          💡 COMMENTAIRES Kadmerian :
-          - Tu peux modifier la portée "10m" directement dans Capacité Spé.
-          - Si tu veux ajouter un 4e talent, colle une nouvelle ligne [Nom] = ...
-        -->
-      `;
-      openModal('Kadmerian (Nain)', contentHTML);
-    }
-
-    /* ========= FICHE : Seishin 👻 ========= */
-    function openSeishinModal() {
-      const contentHTML = `
-        <h4>Stats</h4>
-        <pre class="mono">{60 Hp, Lvl 5 Magie, 20 Spirit, 10 Agi}</pre>
-
-        <h4>Talents</h4>
-        <div class="mono">
-[Harmonie] = Le personnage peux être lié a un autre, La personne lié au personnage gagne 5 Pts de Stats sur toute ses stats Physique, Le personnage lié est marqué.
-[Ripple] = Lorsque le personnage entre en contact direct avec la personne qu'il a marqué leurs actions demande -1 au dés, Le personnage marqué gagne dès lors 5 Pts de Stats sur toute ses stat mental.
-[Sym Bio Tic] = Le personnage peux entrer dans la marque placé sur la personne lié, rentrer dans une marque supprime tout les effets de statu et les Cc du personnage, si le personnage est entrer dans la marque il régénère +5 Hp +15 Mna.
-        </div>
-
-        <h4>Apparence</h4>
-        <pre class="mono">{Forme Totalement élémentaire (base Elément Lock, 15+ Ftd humanoïde élémentaire, 35+ Ftd Total Humanization), 35+ Ftd Yeux de la même couleurs que l'élément}</pre>
-
-        <h4>Capacité Spé</h4>
-        <div class="mono">
-{Le race n'est touchable que par la Magie et le Mana tant qu'il possède moins de 35 Ftd}
-{La race est incapable de faire des Dmg physique tant qu'il possède moins de 35 Ftd}
-{La race peux passé de forme éthérique (1~34 Ftd) à forme Physique (35+ Ftd) pour 5 au dés (20)}
-{Les personne marqué par cette race se Régénère 15 Hp et 10 Mna Par Tours tant que La race se trouve dans la marque}
-        </div>
-
-        <!--
-          💡 COMMENTAIRES Seishin :
-          - Le seuil important ici : 35 Ftd (forme physique).
-          - Tu peux ajuster le coût "5 au dés (20)" si ton système change.
-        -->
-      `;
-      openModal('Seishin 👻', contentHTML);
-    }
-
-    /* ========= FICHE : Dunkel 😈 ========= */
-    function openDunkelModal() {
-      const contentHTML = `
-        <h4>Stats</h4>
-        <pre class="mono">{120  Hp| 180 Hp, 10 Str, 5 Agi, 10 Ftd| 20 Ftd}</pre>
-
-        <h4>Talents</h4>
-        <div class="mono">
-[Maou] = Le personnage est Obligé de Commencer Lvl 0 de Maitrise sur tout, Le personnage a besoin de 25% Moins de SparExp
-[Spiritualisme] = Le personnage Gagne -2(-4 si Génis) au dés pour réussir une Suppression d'action
-[Perfection] = Le personnage n'a plus aucun Elément de base ni évolué, Le personnage gagne L'élément parfait Darkness, Le Lvl cap de ça magie passe au Lvl 25
-        </div>
-
-        <h4>Apparence</h4>
-        <pre class="mono">{Aucun Changement, Humanoïde, Cheveux NOIR LOCK, yeux NOIR/ROUGE LOCK}</pre>
-
-        <h4>Capacités Spé</h4>
-        <div class="mono">
-{La Race peux mimique n'importe quel élément avec Darkness, Le darkness fait aucun Dmg Physique avant le Lvl 5}
-{La Race peux bloqué l'usage d'une tech/atk de n'importe qui en usant du Darkness, ceci block toute ses autre action tant qu'il est maintenu}
-        </div>
-
-        <!--
-          💡 COMMENTAIRES Dunkel :
-          - Ici le point clé : "Darkness" remplace tous les éléments.
-          - Ajoute des règles de niveaux (Lvl 5, Lvl 25) si tu veux préciser davantage.
-        -->
-      `;
-      openModal('Dunkel 😈', contentHTML);
-    }
-
-    /* ========= FICHE : Géant 🪓 ========= */
-    function openGeantModal() {
-      const contentHTML = `
-        <h4>Stats</h4>
-        <pre class="mono">{500|210 Hp, 35|25 Str, 15|5 Ftd}</pre>
-
-        <h4>Talents</h4>
-        <div class="mono">
-[Stronghold] = Si le personnage est immobile de sa position pendant 2+ tours alors il prend 50% moins de Dmg Physique
-[AltTab] = Toute atk ou Tech que le personnage charge ou compresse est 20% plus efficace
-[Kill Monger] = Tuer 5+ Ennemie dans le meme combat augmente la Str de 1x le nombre d'ennemie vaincu (Solo=100% des Dmg) apres le 5
-        </div>
-
-        <h4>Apparence</h4>
-        <pre class="mono">{Blond Brun ou Roux, yeux bleu ou marron, 17~25m de haut}</pre>
-
-        <h4>Capacité Spé</h4>
-        <div class="mono">
-{La Race est capable d'effectué un rituel permettant de condensé leurs force dans leurs corp en réduisant considérablement leurs volume (1/10e de leurs taille normale) au Lvl 2}
-{La race Possède naturellement la capacité d'usé du prana, Leurs prana est Dorée}
-        </div>
-
-        <!--
-          💡 COMMENTAIRES Géant :
-          - Tu peux ajuster la taille "17~25m" selon ton monde.
-          - Le rituel "1/10e" : si tu veux, on peut en faire une règle plus précise.
-        -->
-      `;
-      openModal('Géant 🪓', contentHTML);
-    }
 
     /* =========================================================
        ✅ FIN

@@ -1,0 +1,162 @@
+
+:root{
+  --cloud-speed: 0.33;
+}
+
+/* Base */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 50% 20%, #0b1a2f, #000015);
+}
+
+/* ==== Ciel étoilé ==== */
+#bgStars {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  background: radial-gradient(circle at 50% 20%, #ffffff11, #000015);
+}
+.star {
+  position: absolute; background: white; border-radius: 50%;
+  opacity: 1; animation: twinkle 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 2px rgba(255,255,255,.9));
+}
+@keyframes twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+
+#meteorOne {
+  position: absolute; width: 2px; height: 120px;
+  background: linear-gradient(to bottom, #fff, transparent);
+  top: 10vh; left: -10vw; opacity: 0.8;
+  animation: meteor 3s linear infinite;
+}
+@keyframes meteor {
+  0%   { transform: translate(0, 0) rotate(120deg); opacity: 0; }
+  10%  { opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translate(120vw, 80vh) rotate(90deg); opacity: 0; }
+}
+
+/* ==== En-tête ==== */
+header {
+  position: relative; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 18px;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(2px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+header h1 { margin: 0; font-size: 18px; }
+.btn {
+  padding: 8px 14px; border: none; border-radius: 6px;
+  cursor: pointer; color: #fff; background: rgba(33,150,243,0.35);
+  border: 1px solid rgba(33,150,243,0.4);
+  transition: background .2s ease, border-color .2s ease;
+}
+.btn:hover { background: rgba(33,150,243,0.5); border-color: rgba(33,150,243,0.6); }
+
+/* ==== Trello ==== */
+main { position: relative; z-index: 10; max-width: 1100px; margin: 30px auto; padding: 0 16px; }
+#trelloBoard {
+  margin-top: 10px; padding: 20px; background: rgba(255,255,255,0.08);
+  border-radius: 10px; overflow-x: auto; overflow-y: hidden; padding-bottom: 8px;
+}
+
+#trelloColumns {
+  display: flex;
+  flex-wrap: nowrap;   /* pas de retour à la ligne */
+  gap: 20px;
+  width: max-content;  /* largeur suit le contenu -> permet le scroll horizontal */
+}
+
+.trello-column {
+  flex: 0 0 320px;     /* fixe */
+  min-width: 320px;
+  background: rgba(0,0,0,0.35);
+  padding: 15px; border-radius: 10px; min-height: 260px;
+}
+.trello-column h2 { margin: 0 0 6px; text-align: center; }
+
+.descRow { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.toggleBtn {
+  padding: 8px 10px; border: none; border-radius: 6px; background: #2196f3;
+  color: #fff; cursor: pointer;
+}
+
+.hidden-content {
+  display: none;
+  width: 100%;
+  min-height: 100px;
+  border-radius: 6px;
+  padding: 8px;
+  color: #000;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid rgba(255,255,255,0.6);
+  margin-bottom: 8px;
+}
+
+.trello-list {
+  min-height: 200px; padding: 10px; border-radius: 8px;
+  border: 1px dashed rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.15);
+}
+.trello-card {
+  background: rgba(255,255,255,0.95); color: #000; padding: 8px;
+  margin-bottom: 8px; border-radius: 6px; cursor: grab; word-wrap: break-word;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.trello-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+}
+.trello-card:active { cursor: grabbing; }
+
+.actionsRow { display: flex; gap: 8px; margin-top: 10px; }
+.addCardBtn { flex: 1; padding: 8px; border: none; border-radius: 6px; background: #4caf50; color: #fff; cursor: pointer; }
+.addCardBtn:hover { background: #43a047; }
+
+/* ==== Modal ==== */
+#infoModalOverlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.55);
+  display: none; /* visible via JS */
+  align-items: center; justify-content: center;
+  padding: 16px;
+}
+#infoModalPanel {
+  max-width: 720px; width: 100%;
+  background: #0d1b2a;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+}
+.modalHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  border-top-left-radius: 10px; border-top-right-radius: 10px;
+}
+.modalHeader h3 { margin: 0; font-size: 16px; }
+.closeModalBtn {
+  border: none; border-radius: 6px; padding: 8px 10px; cursor: pointer;
+  background: #e53935; color: #fff;
+}
+.closeModalBtn:hover { background: #d32f2f; }
+.modalBody { padding: 14px 16px; }
+.modalBody h4 { margin: 12px 0 6px; font-size: 14px; color: #90caf9; }
+.modalBody p, .modalBody ul, .modalBody pre { margin: 6px 0; color: #e3f2fd; }
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 8px;
+  white-space: pre-wrap;
+}
+
+/* Responsive : colonnes plus compactes */
+@media (max-width: 600px) {
+  .trello-column { flex-basis: 280px; min-width: 280px; }
+}
